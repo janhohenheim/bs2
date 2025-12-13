@@ -2,15 +2,21 @@
 
 use libloading::{Library, Symbol};
 use std::ffi::CString;
-use std::ptr;
 use std::ptr::null_mut;
 use std::sync::{Arc, LazyLock, Mutex};
+use std::{env, iter, ptr};
+use std::{ffi::OsString, os::windows::ffi::OsStringExt, thread, time::Duration};
 use winapi::shared::minwindef::{HINSTANCE, MAX_PATH};
 use winapi::shared::ntdef::LPSTR;
 use winapi::um::libloaderapi::{GetModuleFileNameW, GetModuleHandleA};
-use winapi::um::processenv::GetCommandLineA;
 use winapi::um::stringapiset::WideCharToMultiByte;
 use windows_sys::Win32::UI::WindowsAndMessaging::{IsWindow, IsWindowVisible};
+use windows_sys::Win32::{
+    Foundation::{BOOL, LPARAM},
+    UI::WindowsAndMessaging::{
+        EnumChildWindows, EnumWindows, GetWindowTextLengthW, GetWindowTextW,
+    },
+};
 
 type Source2MainFn = unsafe extern "C" fn(
     image_base: HINSTANCE, // Base address of exe (HMODULE)
@@ -70,7 +76,26 @@ fn main() {
         let result = source2_main(
             GetModuleHandleA(ptr::null()),
             HINSTANCE::default(),
-            GetCommandLineA(),
+            command_line_arguments(&[
+                // We want Source 2 Tools
+                "-tools",
+                // The "game" is the hollowed-out core of cs2
+                // Todo: find out how to rename this so that everything still works
+                "-game core",
+                // Need to run an addon, any addon, to save stuff properly
+                "-addon foo",
+                // Min size before asserts trigger when run with -dev
+                "-w 4",
+                "-h 4",
+                // Hide it away
+                "-x -4",
+                "-y -4",
+                "-noborder",
+                // Enable some better output on errors
+                "-dev",
+                // Allow opening multiple instances
+                "-allowmultiple",
+            ]),
             0,
             sz_base_dir_utf8.as_mut_ptr(),
             CString::new("core").unwrap().as_ptr(),
@@ -81,13 +106,28 @@ fn main() {
     }
 }
 
-use std::{ffi::OsString, os::windows::ffi::OsStringExt, thread, time::Duration};
-use windows_sys::Win32::{
-    Foundation::{BOOL, LPARAM},
-    UI::WindowsAndMessaging::{
-        EnumChildWindows, EnumWindows, GetWindowTextLengthW, GetWindowTextW,
-    },
-};
+fn command_line_arguments(extra: &[&str]) -> *mut i8 {
+    let extra = extra.iter().map(|s| OsString::from(s));
+    let args: Vec<std::ffi::OsString> = env::args_os().collect();
+    let mut args = args.into_iter();
+    let Some(first) = args.next() else {
+        return null_mut();
+    };
+    let all_args = iter::once(first)
+        .chain(extra)
+        .chain(args)
+        .map(|arg| {
+            let s = arg.to_string_lossy();
+            if s.contains(' ') {
+                format!("\"{}\"", s)
+            } else {
+                s.into_owned()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" ");
+    CString::new(all_args).unwrap().into_raw()
+}
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 enum WindowState {
