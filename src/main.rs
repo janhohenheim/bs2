@@ -10,7 +10,10 @@ use winapi::shared::minwindef::{HINSTANCE, MAX_PATH};
 use winapi::shared::ntdef::LPSTR;
 use winapi::um::libloaderapi::{GetModuleFileNameW, GetModuleHandleA};
 use winapi::um::stringapiset::WideCharToMultiByte;
-use windows_sys::Win32::UI::WindowsAndMessaging::{IsWindow, IsWindowVisible};
+use windows_sys::Win32::UI::WindowsAndMessaging::{
+    GWL_EXSTYLE, GetWindowLongPtrW, IsWindow, IsWindowVisible, SWP_FRAMECHANGED, SWP_NOMOVE,
+    SWP_NOSIZE, SWP_NOZORDER, SetWindowLongPtrW, SetWindowPos, WS_EX_APPWINDOW, WS_EX_TOOLWINDOW,
+};
 use windows_sys::Win32::{
     Foundation::{BOOL, LPARAM},
     UI::WindowsAndMessaging::{
@@ -116,17 +119,11 @@ fn command_line_arguments(extra: &[&str]) -> *mut i8 {
     let all_args = iter::once(first)
         .chain(extra)
         .chain(args)
-        .map(|arg| {
-            let s = arg.to_string_lossy();
-            if s.contains(' ') {
-                format!("\"{}\"", s)
-            } else {
-                s.into_owned()
-            }
-        })
         .collect::<Vec<_>>()
-        .join(" ");
-    CString::new(all_args).unwrap().into_raw()
+        .join(&OsString::from(" "));
+    CString::new(all_args.to_string_lossy().as_ref())
+        .unwrap()
+        .into_raw()
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
@@ -163,9 +160,30 @@ unsafe fn check_window_text(hwnd: isize) {
                     eprintln!("failed to lock window state");
                     return;
                 };
+                if *window_state == WindowState::Uninit {
+                    hide_from_taskbar(hwnd);
+                }
                 *window_state = WindowState::Open;
             }
         }
+    }
+}
+
+unsafe fn hide_from_taskbar(hwnd: isize) {
+    unsafe {
+        let mut ex = GetWindowLongPtrW(hwnd, GWL_EXSTYLE) as isize;
+        ex |= WS_EX_TOOLWINDOW as isize; // mark as tool window
+        ex &= !(WS_EX_APPWINDOW as isize); // remove app window flag
+        SetWindowLongPtrW(hwnd, GWL_EXSTYLE, ex);
+        SetWindowPos(
+            hwnd,
+            0,
+            0,
+            0,
+            0,
+            0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED,
+        );
     }
 }
 
