@@ -155,14 +155,20 @@ unsafe fn check_window_text(hwnd: isize) {
             let title = OsString::from_wide(&buf[..len as usize])
                 .to_string_lossy()
                 .into_owned();
-            if title == "Asset Browser" {
-                let Ok(mut window_state) = WINDOW_STATE.try_lock() else {
+            if title == "Core" {
+                let Ok(window_state) = WINDOW_STATE.try_lock() else {
                     eprintln!("failed to lock window state");
                     return;
                 };
                 if *window_state == WindowState::Uninit {
                     hide_from_taskbar(hwnd);
                 }
+            }
+            if title == "Asset Browser" {
+                let Ok(mut window_state) = WINDOW_STATE.try_lock() else {
+                    eprintln!("failed to lock window state");
+                    return;
+                };
                 *window_state = WindowState::Open;
             }
         }
