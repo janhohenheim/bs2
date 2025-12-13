@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 use libloading::{Library, Symbol};
 use std::ffi::CString;
 use std::ptr;
@@ -9,8 +11,6 @@ use winapi::um::libloaderapi::{GetModuleFileNameW, GetModuleHandleA};
 use winapi::um::processenv::GetCommandLineA;
 use winapi::um::stringapiset::WideCharToMultiByte;
 use windows_sys::Win32::UI::WindowsAndMessaging::{IsWindow, IsWindowVisible};
-
-//mod codegen;
 
 type Source2MainFn = unsafe extern "C" fn(
     image_base: HINSTANCE, // Base address of exe (HMODULE)
