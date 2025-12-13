@@ -5,6 +5,7 @@ edition = "2024"
 authors = ["Jan Hohenheim <jan@hohenheim.ch>"]
 description = "Bevy <-> Source 2 Tools integration"
 license = "MIT OR Apache-2.0"
+build = "build.rs"
 
 [dependencies]
 libloading = "0.9.0"
