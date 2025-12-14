@@ -94,8 +94,6 @@ fn main() {
                 "-x -4",
                 "-y -4",
                 "-noborder",
-                // Enable some better output on errors
-                "-dev",
                 // Allow opening multiple instances
                 "-allowmultiple",
             ]),
