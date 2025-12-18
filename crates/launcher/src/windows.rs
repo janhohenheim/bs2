@@ -1,5 +1,3 @@
-#![windows_subsystem = "windows"]
-
 use libloading::{Library, Symbol};
 use std::ffi::CString;
 use std::ptr::null_mut;
@@ -30,7 +28,7 @@ type Source2MainFn = unsafe extern "C" fn(
     app_name: *const i8,   // App identifier ("csgo")
 ) -> u64;
 
-fn main() {
+pub(crate) fn run() {
     unsafe {
         // Load engine2.dll - must be in same dir or on PATH
         let lib = Library::new("engine2.dll").expect("Failed to load engine2.dll");

@@ -1,13 +1,22 @@
-[package]
-name = "bs2"
-version = "0.0.1"
-edition = "2024"
-authors = ["Jan Hohenheim <jan@hohenheim.ch>"]
-description = "Bevy <-> Source 2 Tools integration"
-license = "MIT OR Apache-2.0"
-build = "build.rs"
+[workspace]
+members = [
+    "crates/*",
+]
+resolver = "3"
 
-[dependencies]
+[workspace.package]
+authors = [
+    "Jan Hohenheim <jan@hohenheim.ch>",
+]
+edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/janhohenheim/bs2"
+keywords = ["bevy", "source", "hammer", "engine", "valve"]
+categories = ["game-development"]
+readme = "readme.md"
+
+
+[workspace.dependencies]
 clap = { version = "4.5.53", features = ["derive"] }
 libloading = "0.9.0"
 winapi = { version = "0.3", features = [
@@ -20,3 +29,47 @@ windows-sys = { version = "0.52", features = [
     "Win32_Foundation",
     "Win32_UI_WindowsAndMessaging",
 ] }
+slint = "1.14.1"
+slint-build = "1.14.1"
+
+[workspace.lints.rust]
+#missing_docs = "warn"
+# Slint doesn't play nice with this one
+#unused_qualifications = "warn"
+
+[workspace.lints.clippy]
+too_many_arguments = "allow"
+type_complexity = "allow"
+needless_lifetimes = "allow"
+doc_markdown = "warn"
+manual_let_else = "warn"
+match_same_arms = "warn"
+redundant_closure_for_method_calls = "warn"
+redundant_else = "warn"
+semicolon_if_nothing_returned = "warn"
+undocumented_unsafe_blocks = "warn"
+unwrap_or_default = "warn"
+nonstandard_macro_braces = "warn"
+ptr_as_ptr = "warn"
+ptr_cast_constness = "warn"
+ref_as_ptr = "warn"
+too_long_first_doc_paragraph = "allow"
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+
+[profile.dev.package."*"]
+inherits = "dev"
+opt-level = 3
+
+[profile.dev]
+opt-level = 0
+
+# Optimize for build time in CI.
+[profile.ci]
+inherits = "dev"
+opt-level = 0
+debug = "line-tables-only"
+codegen-units = 4
+
+[profile.ci.package."*"]
+opt-level = 0
