@@ -1,0 +1,72 @@
+import {
+    Button,
+    GroupBox,
+    SpinBox,
+    ComboBox,
+    CheckBox,
+    LineEdit,
+    TabWidget,
+    VerticalBox,
+    HorizontalBox,
+    Slider,
+    ProgressIndicator,
+    SpinBox,
+    Switch,
+    Spinner,
+    GridBox,
+    TimePickerPopup,
+    DatePickerPopup,
+    TextEdit,
+    Palette,
+} from "std-widgets.slint";
+import { Page } from "page.slint";
+
+
+
+export component SetupPage inherits Page {
+    title: @tr("Setup");
+    description: @tr("This page gives an overview of the default widget set provided by Slint. The widgets are available in different styles native, fluent-(dark/light) and material-(dark/light). The widgets can be imported from \"std-widgets.slint\".");
+
+    GroupBox {
+        title: "Counter Strike 2 Path";
+        height: 120px;
+        VerticalBox {
+            alignment: start;
+            height: 80px;
+            Text {
+                height: 20px;
+                color: Palette.foreground.with-alpha(0.8);
+                text: "Follow the link to set up CS2 + Mod tools";
+            }
+
+            LineEdit {
+                text: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter Strike Global Offensive";
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Source 2 Tools Installation Path";
+        height: 120px;
+        VerticalBox {
+            alignment: start;
+            height: 80px;
+            Text {
+                height: 20px;
+                color: Palette.foreground.with-alpha(0.8);
+                text: "Can be wherever";
+            }
+
+            LineEdit {
+                text: "Home\\Local\\Source 2 Tools";
+            }
+        }
+    }
+
+    Rectangle { }
+
+    Button {
+        height: 40px;
+        text: "Install";
+    }
+}

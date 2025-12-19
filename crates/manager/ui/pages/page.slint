@@ -1,0 +1,26 @@
+import {
+    Switch,
+    GridBox,
+    ListView,
+    ScrollView,
+    HorizontalBox,
+    VerticalBox,
+    Palette,
+} from "std-widgets.slint";
+
+
+export component Page inherits VerticalBox {
+    in property <string> title: "title";
+    in property <string> description: "description";
+
+    accessible-role: tab-panel;
+    accessible-label: root.title;
+
+    Text {
+        height: 40px;
+        font-size: 20px;
+        text <=> root.title;
+    }
+
+    @children
+}

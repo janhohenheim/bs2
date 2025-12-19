@@ -1,0 +1,35 @@
+import {
+    AboutSlint,
+    GroupBox,
+    VerticalBox,
+    StandardListView,
+    ScrollView,
+} from "std-widgets.slint";
+import { Page } from "page.slint";
+
+export component AboutPage inherits Page {
+    title: @tr("About");
+    description: @tr("Are you curious now? Check out the docs and getting starteds from the Github repository and the website https://slint.dev and try it yourself.");
+
+    GroupBox {
+        title: "Legal";
+        VerticalBox {
+            Text {
+                wrap: word-wrap;
+                text: "This application and the BS2 project in general are not affiliated with Valve Corporation in any way. Source 2 and Counter Strike are a trademarks and/or registered trademarks of Valve Corporation. The tools managed by this software must be legally acquired and licensed to you. As of time of writing (2025-12-19), this means acquiring and downloading them over Steam and agreeing to the Steam Subscriber Agreement. Please acquiant yourself with this text before using BS2. In particular, we urge you to carefully read section 2.C. \"License to Use Valve Developer Tools\". Do not use assets belonging to Valve Corporation. Do not use BS2 for commercial purposes.";
+            }
+
+            Text {
+                wrap: word-wrap;
+                text: "This application and the BS2 project in general are not affiliated with Bevy Foundation. Bevy Engine is a trademark and/or registered trademark belonging to Bevy Foundation.";
+            }
+        }
+    }
+
+    AboutSlint {
+        height: 40px;
+    }
+
+    // Spacer
+    Rectangle { }
+}

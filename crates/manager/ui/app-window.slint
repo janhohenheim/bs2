@@ -1,6 +1,34 @@
-export component MainWindow inherits Window {
-    Text {
-        text: "hello world";
-        color: green;
+import { CheckBox, StandardListView } from "std-widgets.slint";
+import {
+    AboutPage,
+    SetupPage,
+    ProjectsPage,
+    UtilitiesPage,
+} from "pages/pages.slint";
+import { SideBar } from "side_bar.slint";
+
+
+export component App inherits Window {
+    min-width: 640px;
+    min-height: 480px;
+    title: @tr("BS2");
+    icon: @image-url("../../../assets/icon.ico");
+
+    HorizontalLayout {
+        visible: true;
+        side-bar := SideBar {
+            title: @tr("BS2 Manager");
+            model: [
+                @tr("Menu" => "Setup"),
+                @tr("Menu" => "Projects"),
+                @tr("Menu" => "Utilities"),
+                @tr("Menu" => "About"),
+            ];
+        }
+
+        if(side-bar.current-item == 0): SetupPage { }
+        if(side-bar.current-item == 1): ProjectsPage { }
+        if(side-bar.current-item == 2): UtilitiesPage { }
+        if(side-bar.current-item == 3): AboutPage { }
     }
 }
