@@ -7,6 +7,8 @@ use std::{
 };
 use tracing::{error, info};
 
+use crate::canonicalize;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct Config {
     pub(crate) cs2_path: String,
@@ -19,11 +21,7 @@ impl Default for Config {
 }
 
 static PATH: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from("config.toml"));
-static CANON_PATH: LazyLock<String> = LazyLock::new(|| {
-    let canon = PATH.canonicalize().unwrap_or(PATH.to_path_buf());
-    let disp = canon.display().to_string();
-    disp.trim_start_matches("\\\\?\\").to_string()
-});
+static CANON_PATH: LazyLock<String> = LazyLock::new(|| canonicalize(&*PATH));
 
 impl Config {
     pub(crate) fn read() -> Self {

@@ -25,7 +25,11 @@ fn main() -> Result<(), slint::PlatformError> {
     let app_inner = app.as_weak();
     update_cs2_state(app_inner)();
 
-    app.set_setup_done(is_setup_done());
+    let is_setup_done = is_setup_done();
+    app.set_setup_done(is_setup_done);
+    if is_setup_done {
+        app.set_current_item(1);
+    }
 
     let app_inner = app.as_weak();
     app.global::<SetupPageLogic>()
@@ -53,6 +57,8 @@ fn main() -> Result<(), slint::PlatformError> {
 
 fn is_setup_done() -> bool {
     Path::new("game/bin/win64/engine2.dll").exists()
+        && Path::new("game/bin/win64/bs2_launcher.exe").exists()
+        && Path::new("content/core_addons").exists()
 }
 
 fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
@@ -61,17 +67,34 @@ fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
         let cs2_path = PathBuf::from(app.global::<Bs2Config>().get_cs2_path().as_str());
         let app = app.as_weak();
         std::thread::spawn(move || {
-            let paths_to_copy = ["core", "_toolsettings", "thirdpartylegalnotices.txt", "bin"];
+            let cs2_game_paths_to_copy =
+                ["core", "_toolsettings", "thirdpartylegalnotices.txt", "bin"];
+            let template_game_paths_to_copy = ["bin", "core", "core_addons"];
 
-            let sources = paths_to_copy.map(|p| cs2_path.join("game").join(p));
+            let sources: Vec<_> = cs2_game_paths_to_copy
+                .map(|p| cs2_path.join("game").join(p))
+                .into_iter()
+                .chain(
+                    template_game_paths_to_copy
+                        .map(|p| Path::new("template").join("game").join(p))
+                        .into_iter(),
+                )
+                .collect();
             let dest = PathBuf::from("game");
-            let canon_dest = dest.canonicalize().unwrap_or_else(|_| dest.clone());
-            let canon_dest = canon_dest.display();
-            let canon_dest = canon_dest.to_string();
-            let canon_dest = canon_dest.trim_start_matches("\\\\?\\");
+            let canon_dest = canonicalize(dest.clone());
 
             if let Err(e) = fs::create_dir_all(&dest) {
                 error!("Failed to create {canon_dest}: {e:?}");
+                return;
+            }
+            let content_dirs = ["core", "core_addons"];
+            for dir in content_dirs {
+                let path = Path::new("content").join(dir);
+                let canon = canonicalize(path.clone());
+                if let Err(e) = fs::create_dir_all(path) {
+                    error!("Failed to create {canon}: {e:?}");
+                    return;
+                }
             }
             let app_inner = app.clone();
             let mut total_bytes = 0;
@@ -103,24 +126,23 @@ fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                     TransitProcessResult::ContinueOrAbort
                 },
             );
+            let sources = sources
+                .iter()
+                .map(|s| s.display().to_string())
+                .collect::<Vec<_>>();
             match result {
                 Ok(written) if written >= total_bytes => {
-                    info!(
-                        "Successfully copied {written} bytes from {:?} to {canon_dest}",
-                        sources.map(|s| s.display().to_string()),
-                    );
+                    info!("Successfully copied {written} bytes from {sources:?} to {canon_dest}",);
                     slint::invoke_from_event_loop(move || {
                         let app = app.unwrap();
                         app.global::<SetupPageLogic>().set_copied_thing("".into());
                         app.set_setup_done(true);
-                        app.set_current_item(1);
                     })
                     .expect("Slint main loop should be running");
                 }
                 Ok(written) => {
                     error!(
-                        "Failed to copy {:?} to {canon_dest}: only wrote {written} bytes instead of {total_bytes}",
-                        sources.map(|s| s.display().to_string()),
+                        "Failed to copy {sources:?} to {canon_dest}: only wrote {written} bytes instead of {total_bytes}"
                     );
                     slint::invoke_from_event_loop(move || {
                         let app = app.unwrap();
@@ -129,10 +151,7 @@ fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                     .expect("Slint main loop should be running");
                 }
                 Err(e) => {
-                    error!(
-                        "Failed to copy {:?} to {canon_dest}: {e:?}",
-                        sources.map(|s| s.display().to_string()),
-                    );
+                    error!("Failed to copy {sources:?} to {canon_dest}: {e:?}");
                     slint::invoke_from_event_loop(move || {
                         let app = app.unwrap();
                         app.global::<SetupPageLogic>().set_copied_thing("".into());
@@ -142,6 +161,13 @@ fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
             };
         });
     }
+}
+
+fn canonicalize(path: impl Into<PathBuf>) -> String {
+    let path = path.into();
+    let canon = path.canonicalize().unwrap_or(path);
+    let canon = canon.display().to_string();
+    canon.trim_start_matches(r"\\?\").to_string()
 }
 
 fn update_cs2_state(app: slint::Weak<App>) -> impl FnMut() {

@@ -1,0 +1,264 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	m_EngineTools = 
+	[
+		{
+			m_Name = "hammer"
+			m_FriendlyName = "Hammer (Map Editor)"
+			m_Library = "tools/hammer.dll"
+			m_ToolIcon = "game:tools/images/hammer/appicon.ico"
+			m_AssetTypes = 
+			[
+				"map_asset",
+			]
+		},
+		{
+			m_Name = "met"
+			m_FriendlyName = "Material Editor"
+			m_Library = "tools/met.dll"
+			m_ToolIcon = "game:tools/images/met/appicon.ico"
+			m_bDoNotWarnAboutLargeAssetBatches = true 
+			m_AssetTypes = 
+			[
+				"material_asset",
+			]
+		},
+		{
+			m_Name = "modeldoc_editor"
+			m_FriendlyName = "ModelDoc Editor"
+			m_Library = "tools/modeldoc_editor.dll"
+			m_ToolIcon = "game:tools/images/modeldoc_editor/appicon.ico"
+			m_InterfaceName = "ToolSystem2_ModelDoc"
+			m_AssetTypes = 
+			[
+				"model_asset",
+				"modeldoc_template_asset",
+				"modeldoc_prefab_asset",
+			]
+		},
+		{
+			m_Name = "pet"
+			m_FriendlyName = "Particle Editor"
+			m_Library = "tools/pet.dll"
+			m_ToolIcon = "game:tools/images/pet/appicon.ico"
+			m_AssetTypes = 
+			[
+				"particle_asset",
+			]						
+		},
+		{
+			m_Name = "animgraph_editor"
+			m_FriendlyName = "AnimGraph Editor"
+			m_Library = "tools/animgraph_editor.dll"
+			m_ToolIcon = "game:tools/images/animgraph_editor/appicon.ico"
+			m_AssetTypes = 
+			[
+				"anim_graph"
+			]	
+			m_LimitToMods = 
+			[
+				"hlvr",
+                "dota",
+			]		
+		},
+		{
+			m_Name = "subrecteditor"
+			m_FriendlyName = "Image subrect editor"
+			m_Library = "tools/subrecteditor.dll"
+			m_ToolIcon = "game:tools/images/subrecteditor/appicon.ico"
+			m_AssetTypes = 
+			[
+				"subrect_asset",
+			]
+			m_LimitToMods = 
+			[
+
+			]
+		},
+		{
+			m_Name = "postprocessingeditor"
+			m_FriendlyName = "Postprocessing Editor"
+			m_Library = "tools/postprocessingeditor.dll"
+			m_ToolIcon = "game:tools/images/postprocessingeditor/appicon.ico"
+			m_AssetTypes = 
+			[
+				"post_processing_settings",
+			]
+			m_bIsSecondaryTool = true	
+            m_ExcludeFromMods = 
+			[
+			]			
+		},
+		{
+			m_Name = "sfm"
+			m_FriendlyName = "Source Filmmaker"
+			m_Library = "tools/sfm.dll"
+			m_ToolIcon = "game:tools/images/sfm/sfm_app.ico"
+		},
+		{
+			m_Name = "workshopmanager"
+			m_FriendlyName = "Workshop Manager"
+			m_Library = "tools/workshopmanager.dll"
+			m_ToolIcon = "game:tools/images/workshopmanager/appicon.png"
+			m_AssetTypes = [  ]
+            m_LimitToMods = 
+			[
+				"hlvr",
+                "dota",
+			]
+			m_bShowInRevisionSubMenu = true			
+		},
+        {
+            m_Name = "multichunk_workshop_manager"
+            m_FriendlyName = "Multichunk Workshop Manager"
+            m_Library = "tools/multichunk_workshop_manager.dll"
+            m_ToolIcon = "game:tools/images/multichunker.png"
+            m_AssetTypes = [  ]
+            m_bShowInRevisionSubMenu = true
+            m_bIsWorkshopManagerTool = true
+			m_LimitToMods = 
+			[
+				
+			]
+        },
+		{
+			m_Name = "cs2_workshop_manager"
+			m_FriendlyName = "Counter-Strike 2 Workshop Manager"
+			m_Library = "tools/cs2_workshop_manager.dll"
+			m_ToolIcon = "game:tools/cs2_workshop_manager/appicon.png"
+			m_AssetTypes = [  ]
+			m_bShowInRevisionSubMenu = true
+			m_LimitToMods = 
+			[
+			]
+			m_bIsWorkshopManagerTool = true
+		},       		
+	]
+	m_ExternalTools = 
+	[
+		{
+			m_Name = "photoshop_tool"
+			m_FriendlyName = "Photoshop"
+			m_MatchSystemExecutable = "photoshop"
+			m_Executable = "{@HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Photoshop.exe}"
+			m_Args = "\"{FilePath}\""
+			m_WorkingDir = "{FileFolder}"
+			m_SupportedExts = 
+			[
+				"psd",
+				"tga",
+				"pfm",
+				"tif",
+			]
+		},
+		{
+			m_Name = "notepad++_tool"
+			m_FriendlyName = "Notepad++"
+			m_Overrides = "notepad++"
+			m_Executable = "{@HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\notepad++.exe}"			
+			m_Command = "%1 \"%f\""
+			m_CommandWithLineColumn = "%1 -n%l -c%u \"%f\""
+			m_Args = "\"{FilePath}\""
+			m_WorkingDir = "{FileFolder}"
+			m_bWaitForFinish = "0"
+			m_SupportedExts = 
+			[
+				"vmdl",
+				"vagrp",
+				"attach",
+				"boneflags",
+				"constraint",
+				"hitboxes",
+				"skeleton",
+				"collision",
+				"css",
+				"xml",
+				"vpdi",
+				"vdata",
+			]
+			m_bIsPrimaryTool = true
+		},
+		{
+			m_Name = "code_tool"
+			m_FriendlyName = "Visual Studio Code"
+			m_Overrides = "code"
+			m_Executable = "{@HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Code.exe}"		
+			m_Args = "\"{FilePath}\""
+			m_WorkingDir = "{FileFolder}"
+			m_SupportedExts = 
+			[
+				"vmdl",
+				"vagrp",
+				"attach",
+				"boneflags",
+				"constraint",
+				"hitboxes",
+				"skeleton",
+				"collision",
+				"css",
+				"xml",
+				"vpdi",
+				"vdata",
+				"vdata_inc",
+				"vanmgrph",
+			]
+			m_bIsPrimaryTool = true
+		},
+		{
+			m_Name = "s2v"
+			m_FriendlyName = "Source 2 Viewer"
+			m_Overrides = "s2v"
+			m_Executable = "{@HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Source2Viewer.exe}"			
+			m_Command = "%1 \"%f\""
+			m_CommandWithLineColumn = "%1 -n%l -c%u \"%f\""
+			m_Args = "\"{FilePath}\""
+			m_WorkingDir = "{FileFolder}"
+			m_bWaitForFinish = "0"
+			m_SupportedExts = 
+			[
+				"vmdl",
+				"vagrp",
+				"attach",
+				"boneflags",
+				"constraint",
+				"hitboxes",
+				"skeleton",
+				"collision",
+				"css",
+				"xml",
+				"vpdi",
+				"vdata",
+				"vcss",
+				"vxml",
+				"vanmgrph",
+			]
+			m_bIsPrimaryTool = true
+		},
+		{
+			m_Name = "Blender"
+			m_FriendlyName = "Blender"
+			m_Overrides = "blender"
+			m_MatchSystemExecutable = "blender"
+			m_Executable = "{@HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\blender.exe}"			
+			m_Args = "\"{FilePath}\""
+			m_WorkingDir = "{FileFolder}"
+			m_bWaitForFinish = "0"
+			m_SupportedExts = 
+			[
+			    "blend",
+				"vmat",
+				"vmdl",
+				"vagrp",
+				"attach",
+				"boneflags",
+				"constraint",
+				"hitboxes",
+				"skeleton",
+				"collision",
+				"fbx",
+			    "dmx",
+			]
+			m_bIsPrimaryTool = true
+		},
+	]	
+}

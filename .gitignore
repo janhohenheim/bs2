@@ -1,3 +1,7 @@
 /target
+
+# For running test installations right here
 /config.toml
 /game
+/template
+/content
