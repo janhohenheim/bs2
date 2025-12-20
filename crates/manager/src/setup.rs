@@ -17,6 +17,7 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
     move || {
         let app = app.unwrap();
         app.set_setup_done(false);
+        app.global::<SetupPageLogic>().set_toast("".into());
         let cs2_path = PathBuf::from(app.global::<Bs2Config>().get_cs2_path().as_str());
         let app = app.as_weak();
         std::thread::spawn(move || {
@@ -146,7 +147,7 @@ pub(crate) fn is_setup_done() -> bool {
 pub(crate) fn update_cs2_state(app: slint::Weak<App>) -> impl FnMut() {
     move || {
         let app = app.unwrap();
-        let cs2_path = app.global::<Bs2Config>().get_cs2_path();
+        let cs2_path = app.global::<SetupPageLogic>().get_cs2_path();
         let engine_dll = PathBuf::from(cs2_path.as_str())
             .join("game")
             .join("bin")
@@ -174,7 +175,7 @@ pub(crate) fn pick_cs2(app: slint::Weak<App>) -> impl FnMut() {
     move || {
         let app = app.unwrap();
         slint::spawn_local(async move {
-            let current = app.global::<Bs2Config>().get_cs2_path();
+            let current = app.global::<SetupPageLogic>().get_cs2_path();
             let path = rfd::AsyncFileDialog::new()
                 .set_parent(&app.window().window_handle())
                 .set_can_create_directories(false)
@@ -185,7 +186,7 @@ pub(crate) fn pick_cs2(app: slint::Weak<App>) -> impl FnMut() {
             let Some(path) = path else {
                 return;
             };
-            app.global::<Bs2Config>()
+            app.global::<SetupPageLogic>()
                 .set_cs2_path(path.path().to_string_lossy().to_string().into());
             update_cs2_state(app.as_weak())();
         })

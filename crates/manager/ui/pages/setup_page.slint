@@ -46,12 +46,17 @@ export component SetupPage inherits Page {
             HorizontalLayout {
                 LineEdit {
                     enabled: SetupPageLogic.copied_thing == "";
-                    text <=> Bs2Config.cs2-path;
+                    text <=> SetupPageLogic.cs2-path;
                     accepted => {
-                        SetupPageLogic.run-setup()
+                        if SetupPageLogic.cs2-state == "good" {
+                            SetupPageLogic.run-setup()
+                        }
                     }
                     changed text => {
-                        SetupPageLogic.update-cs2-state()
+                        SetupPageLogic.update-cs2-state();
+                        if SetupPageLogic.cs2-state == "good" {
+                            Bs2Config.cs2_path = SetupPageLogic.cs2-path;
+                        }
                     }
                     horizontal_stretch: 1;
                 }

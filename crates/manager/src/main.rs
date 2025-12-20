@@ -19,6 +19,8 @@ fn main() -> Result<(), slint::PlatformError> {
     let app = App::new()?;
     let config = Config::read();
     app.global::<Bs2Config>()
+        .set_cs2_path(config.cs2_path.clone().into());
+    app.global::<SetupPageLogic>()
         .set_cs2_path(config.cs2_path.into());
 
     let app_inner = app.as_weak();
