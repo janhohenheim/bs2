@@ -15,12 +15,12 @@ export component App inherits Window {
     preferred-width: 960px;
     min-height: 540px;
     title: @tr("BS2");
-    icon: @image-url("../../../assets/icon.ico");
+    icon: @image-url("../../../assets/icon.svg");
 
     HorizontalLayout {
         visible: true;
         side-bar := SideBar {
-            title: @tr("BS2");
+            title: @tr("Bevy ↔ Source 2");
             model: [
                 {
                     text: @tr("Menu" => "Installation"),

@@ -20,11 +20,12 @@ import {
     Palette,
 } from "std-widgets.slint";
 import { Page } from "page.slint";
-
 import { SetupPageLogic } from "../globals.slint";
+
 
 export component SetupPage inherits Page {
     in property <bool> setup-done;
+
     title: @tr("Installation");
     description: @tr("This page gives an overview of the default widget set provided by Slint. The widgets are available in different styles native, fluent-(dark/light) and material-(dark/light). The widgets can be imported from \"std-widgets.slint\".");
 
@@ -33,15 +34,27 @@ export component SetupPage inherits Page {
         text: setup-done ? "Whenever Counter Strike 2 updates, you can click on \"Update\" below to upgrade your installed Source 2 Tools" : "Before you can use BS2, you need to perform a one-time setup. This will copy the Source 2 Tools from an existing Counter Strike 2 installation into the install directory of BS2 and configure them to work with Bevy.\nFor this to work, you first need to manually install Counter Strike 2 with Workshop enabled. Follow the BS2 setup guide to find out how.";
     }
 
-    GroupBox {
-        title: "Counter Strike 2 Path";
-        height: 120px;
-        VerticalBox {
-            alignment: start;
-            height: 100px;
+    HorizontalBox {
+        Text {
+            text: "Counter Strike 2 Path:";
+            vertical-alignment: center;
+            horizontal-alignment: right;
+        }
 
+        HorizontalLayout {
             path := LineEdit {
-                text: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\";
+                text <=> SetupPageLogic.cs2-path;
+                accepted => {
+                    SetupPageLogic.run-setup(SetupPageLogic.cs2-path)
+                }
+                horizontal_stretch: 1;
+            }
+
+            open_button := Button {
+                text: "📂";
+                clicked => {
+                    SetupPageLogic.pick-cs2()
+                }
             }
         }
     }
@@ -50,7 +63,7 @@ export component SetupPage inherits Page {
         height: 40px;
         text: root.setup-done ? "Update" : "Install";
         clicked => {
-            SetupPageLogic.setup(path.text)
+            SetupPageLogic.run-setup(SetupPageLogic.cs2-path)
         }
     }
 
