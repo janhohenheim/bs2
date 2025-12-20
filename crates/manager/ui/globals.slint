@@ -1,5 +1,12 @@
 export global SetupPageLogic {
-    in-out property <string> cs2-path: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\";
-    callback run-setup(string);
+    callback run-setup();
+    callback update-cs2-state();
     callback pick-cs2;
+    callback write-config;
+    in property <string> cs2-state: "none";
+}
+
+export global Bs2Config {
+    in-out property <string> cs2_path;
+    changed cs2_path => SetupPageLogic.write-config();
 }
