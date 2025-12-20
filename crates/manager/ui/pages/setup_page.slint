@@ -42,9 +42,10 @@ export component SetupPage inherits Page {
         }
 
         Rectangle {
-            background: SetupPageLogic.cs2-state == "good" ? green.with-alpha(0.2) : SetupPageLogic.cs2-state == "only-game" ? orange.with-alpha(0.2) : red.with-alpha(0.2);
+            background: SetupPageLogic.copied_thing != "" ? Palette.background : SetupPageLogic.cs2-state == "good" ? green.with-alpha(0.2) : SetupPageLogic.cs2-state == "only-game" ? orange.with-alpha(0.2) : red.with-alpha(0.2);
             HorizontalLayout {
                 LineEdit {
+                    enabled: SetupPageLogic.copied_thing == "";
                     text <=> Bs2Config.cs2-path;
                     accepted => {
                         SetupPageLogic.run-setup()
@@ -57,6 +58,7 @@ export component SetupPage inherits Page {
 
                 open_button := Button {
                     text: "📂";
+                    enabled: SetupPageLogic.copied_thing == "";
                     clicked => {
                         SetupPageLogic.pick-cs2()
                     }
@@ -75,10 +77,20 @@ export component SetupPage inherits Page {
         color: orange.with-alpha(0.7);
     }
 
+    if SetupPageLogic.copied_thing != "": VerticalBox {
+        Text {
+            text: "Copying \{SetupPageLogic.copied_thing}...";
+        }
+
+        ProgressIndicator {
+            progress: SetupPageLogic.progress;
+        }
+    }
+
     Button {
         height: 40px;
         text: root.setup-done ? "Update" : "Install";
-        enabled: SetupPageLogic.cs2-state == "good";
+        enabled: SetupPageLogic.cs2-state == "good" && SetupPageLogic.copied_thing == "";
         clicked => {
             SetupPageLogic.run-setup()
         }
