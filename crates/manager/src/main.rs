@@ -1,8 +1,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 slint::include_modules!();
 
+use fs_extra::copy_items_with_progress;
+use fs_extra::dir::CopyOptions;
+use fs_extra::dir::TransitProcessResult;
+use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+use tracing::error;
 use tracing::info;
 
 mod config;
@@ -53,8 +58,53 @@ fn is_setup_done() -> bool {
 fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
     move || {
         let app = app.unwrap();
-        let path = app.global::<Bs2Config>().get_cs2_path();
-        info!("Setup {path}");
+        slint::spawn_local(async move {
+            let cs2_path = PathBuf::from(app.global::<Bs2Config>().get_cs2_path().as_str());
+            let paths_to_copy = ["core", "_toolsettings", "thirdpartylegalnotices.txt", "bin"];
+
+            let sources = paths_to_copy.map(|p| cs2_path.join("game").join(p));
+            let dest = PathBuf::from("game");
+            let canon_dest = dest.canonicalize().unwrap_or_else(|_| dest.clone());
+            let canon_dest = canon_dest.display();
+            let canon_dest = canon_dest.to_string();
+            let canon_dest = canon_dest.trim_start_matches("\\\\?\\");
+
+            if let Err(e) = fs::create_dir_all(&dest) {
+                error!("Failed to create {canon_dest}: {e:?}");
+            }
+            let result = copy_items_with_progress(
+                &sources,
+                &dest,
+                &CopyOptions {
+                    overwrite: true,
+                    ..Default::default()
+                },
+                |process| {
+                    let name = if process.file_name.is_empty() {
+                        &process.dir_name
+                    } else {
+                        &process.file_name
+                    };
+                    let path = cs2_path.join("game").join(name);
+                    let progress = process.copied_bytes as f64 / process.total_bytes as f64;
+                    info!("{}: {}", path.display(), progress);
+                    TransitProcessResult::ContinueOrAbort
+                },
+            );
+            match result {
+                Ok(written) => {
+                    info!(
+                        "Successfully copied {written} bytes from {:?} to {canon_dest}",
+                        sources.map(|s| s.display().to_string()),
+                    )
+                }
+                Err(e) => error!(
+                    "Failed to copy {:?} to {canon_dest}: {e:?}",
+                    sources.map(|s| s.display().to_string()),
+                ),
+            };
+        })
+        .expect("Slint process should be ready by now");
     }
 }
 
@@ -69,7 +119,6 @@ fn update_cs2_state(app: slint::Weak<App>) -> impl FnMut() {
             .join("engine2.dll");
         let engine_exists = engine_dll.exists();
         if !engine_exists {
-            info!("noo {}", engine_dll.display());
             app.global::<SetupPageLogic>().set_cs2_state("none".into());
             return;
         }
