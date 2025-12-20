@@ -12,6 +12,7 @@ export { SetupPageLogic, Bs2Config } from "globals.slint";
 export component App inherits Window {
     in property <bool> setup-done;
     in-out property current-item <=> side-bar.current-item;
+
     min-width: 600px;
     preferred-width: 960px;
     min-height: 540px;

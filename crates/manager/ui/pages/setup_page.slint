@@ -86,6 +86,12 @@ export component SetupPage inherits Page {
             progress: SetupPageLogic.progress;
         }
     }
+    if SetupPageLogic.toast != "": VerticalBox {
+        Text {
+            text: SetupPageLogic.toast;
+            color: SetupPageLogic.toast_error ? red : green;
+        }
+    }
 
     Button {
         height: 40px;
