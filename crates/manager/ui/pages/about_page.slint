@@ -11,6 +11,16 @@ export component AboutPage inherits Page {
     title: @tr("About");
     description: @tr("Are you curious now? Check out the docs and getting starteds from the Github repository and the website https://slint.dev and try it yourself.");
 
+    Text {
+        wrap: word-wrap;
+        text: "BS2 Version 0.0.1 is copyright by Jan Hohenheim, licensed at your discretion with either the MIT License or the Apache License 2.0.";
+    }
+
+    Text {
+        wrap: word-wrap;
+        text: "BS2 is open source software. You can find the source code on GitHub. If you run into trouble, create an issue on GitHub and I will try to help you 🙂";
+    }
+
     GroupBox {
         title: "Legal";
         VerticalBox {
@@ -27,7 +37,7 @@ export component AboutPage inherits Page {
     }
 
     AboutSlint {
-        height: 40px;
+        height: 100px;
     }
 
     // Spacer

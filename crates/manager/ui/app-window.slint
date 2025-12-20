@@ -6,27 +6,44 @@ import {
     UtilitiesPage,
 } from "pages/pages.slint";
 import { SideBar } from "side_bar.slint";
+export { SetupPageLogic } from "globals.slint";
 
 
 export component App inherits Window {
-    min-width: 640px;
-    min-height: 480px;
+    in property <bool> setup-done;
+    min-width: 600px;
+    preferred-width: 960px;
+    min-height: 540px;
     title: @tr("BS2");
     icon: @image-url("../../../assets/icon.ico");
 
     HorizontalLayout {
         visible: true;
         side-bar := SideBar {
-            title: @tr("BS2 Manager");
+            title: @tr("BS2");
             model: [
-                @tr("Menu" => "Setup"),
-                @tr("Menu" => "Projects"),
-                @tr("Menu" => "Utilities"),
-                @tr("Menu" => "About"),
+                {
+                    text: @tr("Menu" => "Installation"),
+                    enabled: true,
+                },
+                {
+                    text: @tr("Menu" => "Projects"),
+                    enabled: setup-done,
+                },
+                {
+                    text: @tr("Menu" => "Utilities"),
+                    enabled: setup-done,
+                },
+                {
+                    text: @tr("Menu" => "About"),
+                    enabled: true,
+                }
             ];
         }
 
-        if(side-bar.current-item == 0): SetupPage { }
+        if(side-bar.current-item == 0): SetupPage {
+            setup-done: setup-done;
+        }
         if(side-bar.current-item == 1): ProjectsPage { }
         if(side-bar.current-item == 2): UtilitiesPage { }
         if(side-bar.current-item == 3): AboutPage { }

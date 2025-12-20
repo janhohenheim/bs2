@@ -21,52 +21,38 @@ import {
 } from "std-widgets.slint";
 import { Page } from "page.slint";
 
-
+import { SetupPageLogic } from "../globals.slint";
 
 export component SetupPage inherits Page {
-    title: @tr("Setup");
+    in property <bool> setup-done;
+    title: @tr("Installation");
     description: @tr("This page gives an overview of the default widget set provided by Slint. The widgets are available in different styles native, fluent-(dark/light) and material-(dark/light). The widgets can be imported from \"std-widgets.slint\".");
+
+    Text {
+        wrap: word-wrap;
+        text: setup-done ? "Whenever Counter Strike 2 updates, you can click on \"Update\" below to upgrade your installed Source 2 Tools" : "Before you can use BS2, you need to perform a one-time setup. This will copy the Source 2 Tools from an existing Counter Strike 2 installation into the install directory of BS2 and configure them to work with Bevy.\nFor this to work, you first need to manually install Counter Strike 2 with Workshop enabled. Follow the BS2 setup guide to find out how.";
+    }
 
     GroupBox {
         title: "Counter Strike 2 Path";
         height: 120px;
         VerticalBox {
             alignment: start;
-            height: 80px;
-            Text {
-                height: 20px;
-                color: Palette.foreground.with-alpha(0.8);
-                text: "Follow the link to set up CS2 + Mod tools";
-            }
+            height: 100px;
 
-            LineEdit {
-                text: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter Strike Global Offensive";
+            path := LineEdit {
+                text: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\";
             }
         }
     }
 
-    GroupBox {
-        title: "Source 2 Tools Installation Path";
-        height: 120px;
-        VerticalBox {
-            alignment: start;
-            height: 80px;
-            Text {
-                height: 20px;
-                color: Palette.foreground.with-alpha(0.8);
-                text: "Can be wherever";
-            }
-
-            LineEdit {
-                text: "Home\\Local\\Source 2 Tools";
-            }
+    Button {
+        height: 40px;
+        text: root.setup-done ? "Update" : "Install";
+        clicked => {
+            SetupPageLogic.setup(path.text)
         }
     }
 
     Rectangle { }
-
-    Button {
-        height: 40px;
-        text: "Install";
-    }
 }
