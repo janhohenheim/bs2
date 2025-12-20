@@ -13,4 +13,6 @@ fn main() {
         }
     };
     slint_build::compile_with_config("ui/app-window.slint", cfg).expect("Slint build failed");
+    println!("cargo:rerun-if-changed=assets/icon.rc");
+    println!("cargo:rustc-link-arg-bins=assets/icon.res");
 }

@@ -1,7 +1,18 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 slint::include_modules!();
-use rfd::FileHandle;
+use serde::{Deserialize, Serialize};
 use tracing::info;
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Config {
+    cs2_path: String,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self { cs2_path: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\".into() }
+    }
+}
 
 fn main() -> Result<(), slint::PlatformError> {
     tracing_subscriber::fmt::init();
@@ -47,3 +58,5 @@ fn pick_cs2(app: slint::Weak<App>) -> impl FnMut() {
         .expect("Slint event loop should already be initialized");
     }
 }
+
+fn read_config() {}

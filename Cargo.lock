@@ -715,8 +715,10 @@ name = "bs2_manager"
 version = "0.1.0"
 dependencies = [
  "rfd",
+ "serde",
  "slint",
  "slint-build",
+ "toml",
  "tracing",
  "tracing-subscriber",
 ]
