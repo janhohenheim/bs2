@@ -1,3 +1,8 @@
+#![expect(
+    clippy::undocumented_unsafe_blocks,
+    reason = "This is all raw WinAPI calls lol"
+)]
+
 use libloading::{Library, Symbol};
 use std::ffi::CString;
 use std::ptr::null_mut;
@@ -106,7 +111,7 @@ pub(crate) fn run() {
 }
 
 fn command_line_arguments(extra: &[&str]) -> *mut i8 {
-    let extra = extra.iter().map(|s| OsString::from(s));
+    let extra = extra.iter().map(OsString::from);
     let args: Vec<std::ffi::OsString> = env::args_os().collect();
     let mut args = args.into_iter();
     let Some(first) = args.next() else {
@@ -213,7 +218,7 @@ unsafe fn enum_all_children(hwnd: isize) {
 unsafe extern "system" fn enum_windows_proc(hwnd: isize, _: LPARAM) -> BOOL {
     unsafe {
         check_window_text(hwnd);
-        let Ok(window_state) = WINDOW_STATE.try_lock().map(|w| w.clone()) else {
+        let Ok(window_state) = WINDOW_STATE.try_lock().map(|w| *w) else {
             eprintln!("failed to lock window state");
             return 0;
         };
@@ -240,7 +245,7 @@ fn asset_browser_closed() -> bool {
                 return true;
             };
             if *window_state == WindowState::Open {
-                *window_state = WindowState::Searching
+                *window_state = WindowState::Searching;
             }
         }
         EnumWindows(Some(enum_windows_proc), 0);
@@ -249,9 +254,8 @@ fn asset_browser_closed() -> bool {
             return true;
         };
         match *window_state {
-            WindowState::Uninit => false,
             WindowState::Searching => true,
-            WindowState::Open => false,
+            WindowState::Open | WindowState::Uninit => false,
         }
     }
 }

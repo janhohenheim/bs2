@@ -1,8 +1,5 @@
-use std::ffi::OsStr;
-use std::ffi::OsString;
-use std::path::PathBuf;
-
-use clap::{Args, Parser, Subcommand, ValueEnum};
+#![expect(unused_variables, reason = "WIP")]
+use clap::{Parser, Subcommand};
 
 /// A fictional versioning CLI
 #[derive(Debug, Parser)] // requires `derive` feature

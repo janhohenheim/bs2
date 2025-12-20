@@ -52,7 +52,7 @@ impl Config {
             error!(
                 "Failed to write config to {} with contents {self:?}: {e:?}",
                 *CANON_PATH
-            )
+            );
         } else {
             info!(
                 "Successfully wrote config to {} with contents {self:?}",
@@ -74,7 +74,7 @@ impl Config {
                 info!("Initializing default config at {}", *CANON_PATH);
             }
             Err(e) => {
-                error!("Failed to check if config at {} exists: {e:?}", *CANON_PATH)
+                error!("Failed to check if config at {} exists: {e:?}", *CANON_PATH);
             }
         }
         let config = Self::default();

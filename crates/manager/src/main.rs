@@ -76,8 +76,7 @@ fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                 .into_iter()
                 .chain(
                     template_game_paths_to_copy
-                        .map(|p| Path::new("template").join("game").join(p))
-                        .into_iter(),
+                        .map(|p| Path::new("template").join("game").join(p)),
                 )
                 .collect();
             let dest = PathBuf::from("game");
@@ -214,7 +213,7 @@ fn pick_cs2(app: slint::Weak<App>) -> impl FnMut() {
             };
             app.global::<Bs2Config>()
                 .set_cs2_path(path.path().to_string_lossy().to_string().into());
-            update_cs2_state(app.as_weak())()
+            update_cs2_state(app.as_weak())();
         })
         .expect("Slint event loop should already be initialized");
     }
