@@ -1,10 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::{
-    fmt::Display,
-    fs,
-    path::PathBuf,
-    sync::{LazyLock, OnceLock},
-};
+use std::{fs, path::PathBuf, sync::LazyLock};
 use tracing::{error, info};
 
 use crate::canonicalize;
