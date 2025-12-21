@@ -1,18 +1,19 @@
 BS2 offers integration between tools used by the [Source 2 Engine](https://developer.valvesoftware.com/wiki/Source_2) and [Bevy Engine](https://bevy.org/). But before that, we first need to get these tools from somewhere! Unfortunately, there is no simple "press here to download all tools" kind of deal from Valve, at least not yet. Instead, the newest version of the Source 2 Tools are distributed with the game [Counter-Strike 2](https://www.counter-strike.net/cs2) (CS2). Fortunately for us, CS2 is free, so we can still relatively easily get access to the Tools through it.
 
 
-<detail>
+<details>
 <summary>Why do I need to click through this manually? Can't you automate it?</summary>
 
 We could, but Valve really dislikes processes that allow you to download things by bypassing Steam. Maybe kicking off Steam over the command line would be fine, maybe it wouldn't. We don't know. To be on the safe side, we let users manually interact with Steam. Don't worry, it doesn't take long :)
-</detail>
+</details>
 
 The first step is to create an account for and download [Steam](https://store.steampowered.com/). Once we're running Steam, we search for "Counter-Strike 2" in the search bar and click on the first result. Alternatively, we can [use this link](https://store.steampowered.com/app/730/CounterStrike_2/).
 
 ![Image showing the search bar in the upper left of the Steam UI. We entered the text "Counter-Strike 2" and the first result shows the game, along with the tag "Free"](setup-1.png)
 
-<detail>
+<details>
 <summary>Help, I only see Counter-Strike 2 Soundtrack!</summary>
+
 Steam is probably filtering out CS2 due to your store preferences. Click on your username on the upper right, then click on "Store preferences". Ensure that at least the following two checkboxes are marked:
 
 ![The "Mature Content Filtering" matrix has the columns "Store" and "Community". The checkboxes with the column "Store" and the rows "General Mature Content" and "Frequent Violence or Gore" are activated.](setup-2.png)
@@ -20,7 +21,7 @@ Steam is probably filtering out CS2 due to your store preferences. Click on your
 Then click yourself into any other view to save these settings, e.g. by clicking on "STORE" in the menu bar. Now try again.
 
 If you're sensitive to the categories we just enabled, be warned that the videos playing automatically in the Store page feature simulated, fictional depictions of violence and blood. Beyond that, we don't actually need to run CS2 once, so you won't be forced to interact with these themes any further than that. After the BS2 setup, you can safely uninstall CS2 again and revert these filtering changes to a level that you're more comfortable with.
-</detail>
+</details>
 
 Once we're on the correct Steam page, we scroll down to where it says "Free To Play", and click on "Add to Library".
 
@@ -57,10 +58,11 @@ This will start the download process. We can see how far we are on the library e
 
 We'll need to wait a bit until this is done. Depending on your internet connection, this may take a while. After all, it's more than 50 gigabytes of data. If storage space is tight, don't worry, we can safely delete most of this after the setup is done. BS2 only requires about 1.5 Gigabyte to work.
 
-<detail>
+<details>
 <summary>Why do I need to download 50 gigabytes only to throw them away?</summary>
+
 Because there is currently no known way to download the Workshop Tools DLC containing the Source 2 Tools we need without also installing a game with it. Since CS2 is both free *and* the game that delivers the tools to us, it's the candidate of choice. But yes, sadly this means we have to download the entirety of CS2 for nothing.
-</detail>
+</details>
 
 When the download is done, we can start BS2 and perform the one-time installation. See TODO for more on that. If you're a programmer, you will also want to read the TODO guide. 
 
