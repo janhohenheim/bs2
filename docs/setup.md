@@ -7,7 +7,7 @@ BS2 offers integration between tools used by the [Source 2 Engine](https://devel
 We could, but Valve really dislikes processes that allow you to download things by bypassing Steam. Maybe kicking off Steam over the command line would be fine, maybe it wouldn't. We don't know. To be on the safe side, we let users manually interact with Steam. Don't worry, it doesn't take long :)
 </details>
 
-The first step is to create an account for and download [Steam](https://store.steampowered.com/). Once we're running Steam, we search for "Counter-Strike 2" in the search bar and click on the first result. Alternatively, we can [use this link](https://store.steampowered.com/app/730/CounterStrike_2/).
+The first step is to create an account for and download [Steam](https://store.steampowered.com/). Once we're running Steam, need to add CS2 to our library. If you already have it, please skip to the step where we enable the Workshop Tools. Otherwise, we open the tab labeled "STORE" and search for "Counter-Strike 2" in the search bar, then click on the first result. Alternatively, we can [use this link](https://store.steampowered.com/app/730/CounterStrike_2/).
 
 ![Image showing the search bar in the upper left of the Steam UI. We entered the text "Counter-Strike 2" and the first result shows the game, along with the tag "Free"](setup-1.png)
 
@@ -64,7 +64,7 @@ We'll need to wait a bit until this is done. Depending on your internet connecti
 Because there is currently no known way to download the Workshop Tools DLC containing the Source 2 Tools we need without also installing a game with it. Since CS2 is both free *and* the game that delivers the tools to us, it's the candidate of choice. But yes, sadly this means we have to download the entirety of CS2 for nothing.
 </details>
 
-When the download is done, we can start BS2 and perform the one-time installation. See TODO for more on that. If you're a programmer, you will also want to read the TODO guide. 
+When the download is done, we can start BS2 and perform the one-time installation. See the [top-level docs](../readme.md) for more information about how to proceed. 
 
 After the BS2 setup is done, we don't need CS2 anymore. We can delete Counter-Strike 2 by right-clicking its library entry again, just as when we wanted to configure its properties, but this time select "Manage" followed by "Uninstall".
 
