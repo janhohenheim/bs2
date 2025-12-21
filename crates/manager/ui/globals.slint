@@ -11,6 +11,17 @@ export global SetupPageLogic {
     in property <float> progress;
 }
 
+export struct ProjectDef {
+    name: string,
+    path: string,
+}
+
+export global ProjectsPageLogic {
+    callback pick-project() -> string;
+    in-out property <ProjectDef> new-project;
+    in-out property <[ProjectDef]> projects: [{ name: "foo", path: "bar" }];
+}
+
 export global Bs2Config {
     in-out property <string> cs2_path;
     changed cs2_path => SetupPageLogic.write-config();

@@ -36,7 +36,7 @@ export component SetupPage inherits Page {
 
     HorizontalBox {
         Text {
-            text: "Counter Strike 2 Path:";
+            text: "Counter Strike 2 directory:";
             vertical-alignment: center;
             horizontal-alignment: right;
         }
@@ -83,6 +83,7 @@ export component SetupPage inherits Page {
     }
 
     if SetupPageLogic.copied_thing != "": VerticalBox {
+        alignment: start;
         Text {
             text: "Copying \{SetupPageLogic.copied_thing}...";
         }
@@ -92,6 +93,7 @@ export component SetupPage inherits Page {
         }
     }
     if SetupPageLogic.toast != "": VerticalBox {
+        alignment: start;
         Text {
             text: SetupPageLogic.toast;
             color: SetupPageLogic.toast_error ? red : green;
