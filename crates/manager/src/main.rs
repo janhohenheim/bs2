@@ -76,7 +76,7 @@ fn main() -> Result<(), slint::PlatformError> {
                 .set_project_selection(ModelRc::from(
                     iter::once("➕︎ Create New Project")
                         .chain(Config::read().projects.iter().map(|p| p.name.as_str()))
-                        .map(|s| s.into())
+                        .map(std::convert::Into::into)
                         .collect::<Vec<_>>()
                         .as_ref(),
                 ));
@@ -145,12 +145,16 @@ fn main() -> Result<(), slint::PlatformError> {
 
             let dir = working_dir().join("game").join("bin").join("win64");
             let path = dir.join("bs2_launcher.exe");
-            Command::new(path)
-                .creation_flags(DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)
-                .current_dir(dir)
-                .args([format!("-addon {name}")])
-                .spawn()
-                .expect("failed to start executable");
+            std::thread::spawn(move || {
+                Command::new(path)
+                    .creation_flags(DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)
+                    .current_dir(dir)
+                    .args(["-addon", name.as_str()])
+                    .spawn()
+                    .expect("failed to start executable")
+                    .wait()
+                    .expect("failed to actually run executable");
+            });
         });
 
     app.run()

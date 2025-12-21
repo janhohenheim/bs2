@@ -3,6 +3,7 @@ use fs_extra::dir::CopyOptions;
 use fs_extra::dir::TransitProcessResult;
 use slint::ComponentHandle as _;
 use std::fs;
+use std::fs::OpenOptions;
 use std::path::Path;
 use std::path::PathBuf;
 use tracing::error;
@@ -13,10 +14,29 @@ use crate::Bs2Config;
 use crate::Cs2State;
 use crate::SetupPageLogic;
 use crate::canonicalize;
+use crate::working_dir;
 
 pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
     move || {
         let app = app.unwrap();
+        if !working_dir().join("template").exists() {
+            app.global::<SetupPageLogic>()
+                .set_toast("Cannot set up BS2: the template/ directory is missing. Try completely uninstalling and reinstalling BS2.".to_string().into());
+            app.global::<SetupPageLogic>().set_toast_error(true);
+            return;
+        }
+        if is_locked(
+            working_dir()
+                .join("game")
+                .join("bin")
+                .join("win64")
+                .join("engine2.dll"),
+        ) {
+            app.global::<SetupPageLogic>()
+                .set_toast("Cannot set up BS2 while the Source 2 Tools are in use. Please close all of them first.".to_string().into());
+            app.global::<SetupPageLogic>().set_toast_error(true);
+            return;
+        }
         app.set_setup_done(false);
         app.global::<SetupPageLogic>().set_toast("".into());
         let cs2_path = PathBuf::from(app.global::<Bs2Config>().get_cs2_path().as_str());
@@ -30,10 +50,11 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                 .map(|p| cs2_path.join("game").join(p))
                 .into_iter()
                 .chain(
-                    template_game_paths_to_copy.map(|p| Path::new("template").join("game").join(p)),
+                    template_game_paths_to_copy
+                        .map(|p| working_dir().join("template").join("game").join(p)),
                 )
                 .collect();
-            let dest = PathBuf::from("game");
+            let dest = working_dir().join("game");
             let canon_dest = canonicalize(dest.clone());
 
             if let Err(e) = fs::create_dir_all(&dest) {
@@ -49,7 +70,7 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
             }
             let content_dirs = ["core", "core_addons"];
             for dir in content_dirs {
-                let path = Path::new("content").join(dir);
+                let path = working_dir().join("content").join(dir);
                 let canon = canonicalize(path.clone());
                 if let Err(e) = fs::create_dir_all(path) {
                     error!("Failed to create {canon}: {e}");
@@ -129,7 +150,7 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                         let app = app.unwrap();
                         app.global::<SetupPageLogic>().set_copied_thing("".into());
                         app.global::<SetupPageLogic>()
-                            .set_toast(format!("Failed to set up BS2: {e}").into());
+                            .set_toast(format!("Failed to set up BS2: {e} ({:?})", e.kind).into());
                         app.global::<SetupPageLogic>().set_toast_error(true);
                     })
                     .expect("Slint main loop should be running");
@@ -140,9 +161,11 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
 }
 
 pub(crate) fn is_setup_done() -> bool {
-    Path::new("game/bin/win64/engine2.dll").exists()
-        && Path::new("game/bin/win64/bs2_launcher.exe").exists()
-        && Path::new("content/core_addons").exists()
+    working_dir().join("game/bin/win64/engine2.dll").exists()
+        && working_dir()
+            .join("game/bin/win64/bs2_launcher.exe")
+            .exists()
+        && working_dir().join("content/core_addons").exists()
 }
 
 pub(crate) fn update_cs2_state(app: slint::Weak<App>) -> impl FnMut() {
@@ -170,4 +193,16 @@ pub(crate) fn update_cs2_state(app: slint::Weak<App>) -> impl FnMut() {
             app.global::<SetupPageLogic>().set_cs2_state(Cs2State::Good);
         }
     }
+}
+
+fn is_locked(path: impl AsRef<Path>) -> bool {
+    let path = path.as_ref();
+    if !path.exists() {
+        return false;
+    }
+    OpenOptions::new()
+        .write(true)
+        .create(false)
+        .open(path)
+        .is_err()
 }

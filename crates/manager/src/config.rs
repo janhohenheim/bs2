@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf, sync::LazyLock};
 use tracing::{error, info};
 
-use crate::canonicalize;
+use crate::{canonicalize, working_dir};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Config {
@@ -22,7 +22,7 @@ pub(crate) struct Project {
     pub(crate) path: String,
 }
 
-static PATH: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from("config.toml"));
+static PATH: LazyLock<PathBuf> = LazyLock::new(|| working_dir().join("config.toml"));
 static CANON_PATH: LazyLock<String> = LazyLock::new(|| canonicalize(&*PATH));
 
 impl Config {

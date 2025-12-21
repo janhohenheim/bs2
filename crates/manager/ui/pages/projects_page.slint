@@ -130,7 +130,7 @@ export component ProjectsPage inherits Page {
                         horizontal-alignment: right;
                     }
 
-                    name := Text {
+                    Text {
                         text: ProjectsPageLogic.read-project(project-box.current-value).path;
                         vertical-alignment: center;
                         horizontal-alignment: right;
@@ -140,7 +140,7 @@ export component ProjectsPage inherits Page {
                 Button {
                     text: "Launch Tools";
                     clicked => {
-                        ProjectsPageLogic.launch-tools(name.text)
+                        ProjectsPageLogic.launch-tools(project-box.current-value)
                     }
                 }
             }

@@ -95,44 +95,6 @@
 			m_Library = "tools/sfm.dll"
 			m_ToolIcon = "game:tools/images/sfm/sfm_app.ico"
 		},
-		{
-			m_Name = "workshopmanager"
-			m_FriendlyName = "Workshop Manager"
-			m_Library = "tools/workshopmanager.dll"
-			m_ToolIcon = "game:tools/images/workshopmanager/appicon.png"
-			m_AssetTypes = [  ]
-            m_LimitToMods = 
-			[
-				"hlvr",
-                "dota",
-			]
-			m_bShowInRevisionSubMenu = true			
-		},
-        {
-            m_Name = "multichunk_workshop_manager"
-            m_FriendlyName = "Multichunk Workshop Manager"
-            m_Library = "tools/multichunk_workshop_manager.dll"
-            m_ToolIcon = "game:tools/images/multichunker.png"
-            m_AssetTypes = [  ]
-            m_bShowInRevisionSubMenu = true
-            m_bIsWorkshopManagerTool = true
-			m_LimitToMods = 
-			[
-				
-			]
-        },
-		{
-			m_Name = "cs2_workshop_manager"
-			m_FriendlyName = "Counter-Strike 2 Workshop Manager"
-			m_Library = "tools/cs2_workshop_manager.dll"
-			m_ToolIcon = "game:tools/cs2_workshop_manager/appicon.png"
-			m_AssetTypes = [  ]
-			m_bShowInRevisionSubMenu = true
-			m_LimitToMods = 
-			[
-			]
-			m_bIsWorkshopManagerTool = true
-		},       		
 	]
 	m_ExternalTools = 
 	[

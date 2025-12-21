@@ -97,6 +97,8 @@ pub(crate) fn run() {
                 "-noborder",
                 // Allow opening multiple instances
                 "-allowmultiple",
+                "-insecure",
+                "-allow_third_party_software",
             ]),
             0,
             sz_base_dir_utf8.as_mut_ptr(),
@@ -120,6 +122,7 @@ fn command_line_arguments(extra: &[&str]) -> *mut i8 {
         .chain(args)
         .collect::<Vec<_>>()
         .join(&OsString::from(" "));
+
     CString::new(all_args.to_string_lossy().as_ref())
         .unwrap()
         .into_raw()
