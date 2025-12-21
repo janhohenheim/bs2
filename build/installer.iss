@@ -45,8 +45,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\target\release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\target\release\bs2_launcher.exe"; DestDir: "{app}\template\game\bin\win64"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\target\release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\target\release\bs2_launcher.exe"; DestDir: "{app}\template\game\bin\win64"; Flags: ignoreversion
 Source: "..\crates\manager\template\*"; DestDir: "{app}\template"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -58,10 +58,10 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
-Type: files; Name: "{app}\game\core\**\*.*"
-Type: files; Name: "{app}\config.toml"
-Type: files; Name: "{app}\game\bin\**\*.*"
-Type: files; Name: "{app}\content\core\**\*.*"
-Type: files; Name: "{app}\game\_toolsettings\**\*.*"
-Type: files; Name: "{app}\game\thirdpartylegalnotices.txt"
+Type: filesandordirs; Name: "{app}\game\core"
+Type: filesandordirs; Name: "{app}\config.toml"
+Type: filesandordirs; Name: "{app}\game\bin"
+Type: filesandordirs; Name: "{app}\content\core"
+Type: filesandordirs; Name: "{app}\game\_toolsettings"
+Type: filesandordirs; Name: "{app}\game\thirdpartylegalnotices.txt"
 
