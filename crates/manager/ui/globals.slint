@@ -29,13 +29,14 @@ export global ProjectsPageLogic {
     callback update-project-selection();
     pure callback read-project(string) -> ProjectDef;
     callback create-project();
-    in-out property <[string]> project-selection;
+    in-out property <[string]> project-selection: ["foo", "bar"];
     in-out property <string> new-project-name;
     in-out property <string> new-project-path;
-    in-out property <int> project-idx;
 }
 
 export global Bs2Config {
     in-out property <string> cs2_path;
     changed cs2_path => SetupPageLogic.write-config();
+    in-out property <int> last_project;
+    changed last_project => SetupPageLogic.write-config();
 }

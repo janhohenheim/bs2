@@ -21,13 +21,20 @@ import {
     StandardButton,
 } from "std-widgets.slint";
 import { Page } from "page.slint";
-import { ProjectsPageLogic, ProjectDef } from "../globals.slint";
+import { ProjectsPageLogic, ProjectDef, Bs2Config } from "../globals.slint";
 
 
 export component ProjectsPage inherits Page {
     title: @tr("Projects");
     description: @tr("This page gives an overview of the default widget set provided by Slint. The widgets are available in different styles native, fluent-(dark/light) and material-(dark/light). The widgets can be imported from \"std-widgets.slint\".");
 
+    property <int> last_project <=> Bs2Config.last_project;
+    property <bool> is_new: project-box.current-index == 0;
+    changed last_project => {
+        project-box.current-index = last_project;
+        project-box.current-value = ProjectsPageLogic.project-selection[last_project];
+        is_new = false;
+    }
     VerticalBox {
         alignment: start;
         Text {
@@ -44,11 +51,15 @@ export component ProjectsPage inherits Page {
 
             project-box := ComboBox {
                 model <=> ProjectsPageLogic.project-selection;
-                current-index <=> ProjectsPageLogic.project-idx;
+                current-index: Bs2Config.last_project;
+                current-value: ProjectsPageLogic.project-selection[Bs2Config.last_project];
+                selected(current-value) => {
+                    is_new = current-value == ProjectsPageLogic.project-selection[0]
+                }
             }
         }
 
-        if project-box.current-index == 0: GroupBox {
+        if is_new: GroupBox {
             title: "New Project";
 
             VerticalBox {
@@ -112,14 +123,11 @@ export component ProjectsPage inherits Page {
                     clicked => {
                         ProjectsPageLogic.create-project();
                         ProjectsPageLogic.update-project-selection();
-                        let total = ProjectsPageLogic.project-selection;
-                        ProjectsPageLogic.project-idx = total.length - 1;
                     }
                 }
             }
         }
-
-        if project-box.current-index >= 1: GroupBox {
+        if !is_new: GroupBox {
             title: project-box.current-value;
             VerticalBox {
                 HorizontalBox {

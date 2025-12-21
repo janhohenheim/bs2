@@ -8,11 +8,18 @@ use crate::{canonicalize, working_dir};
 pub(crate) struct Config {
     pub(crate) cs2_path: String,
     pub(crate) projects: Vec<Project>,
+    pub(crate) last_project: u32,
 }
 
 impl Default for Config {
     fn default() -> Self {
-        Self { cs2_path: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\".into(), projects: Vec::new() }
+        Self {
+            cs2_path:
+                r"C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\"
+                    .into(),
+            projects: Vec::new(),
+            last_project: 0,
+        }
     }
 }
 
@@ -51,18 +58,18 @@ impl Config {
         let toml_str = match toml::to_string_pretty(self) {
             Ok(toml) => toml,
             Err(e) => {
-                error!("Serialize config with contents {self:?}: {e:?}",);
+                error!("Serialize config with contents {self:#?}: {e:?}",);
                 return;
             }
         };
         if let Err(e) = fs::write(PATH.as_path(), toml_str) {
             error!(
-                "Failed to write config to {} with contents {self:?}: {e:?}",
+                "Failed to write config to {} with contents {self:#?}: {e:?}",
                 *CANON_PATH
             );
         } else {
             info!(
-                "Successfully wrote config to {} with contents {self:?}",
+                "Successfully wrote config to {} with contents {self:#?}",
                 *CANON_PATH
             );
         }

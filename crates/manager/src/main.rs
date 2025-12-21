@@ -11,6 +11,7 @@ use std::process::Command;
 mod config;
 mod setup;
 use config::Config;
+use slint::Model;
 use slint::ModelRc;
 use slint::SharedString;
 
@@ -27,6 +28,8 @@ fn main() -> Result<(), slint::PlatformError> {
     let config = Config::read();
     app.global::<Bs2Config>()
         .set_cs2_path(config.cs2_path.clone().into());
+    app.global::<Bs2Config>()
+        .set_last_project(config.last_project as i32);
 
     app.global::<SetupPageLogic>()
         .set_cs2_path(config.cs2_path.into());
@@ -63,6 +66,7 @@ fn main() -> Result<(), slint::PlatformError> {
         let app = app_inner.unwrap();
         Config {
             cs2_path: app.global::<Bs2Config>().get_cs2_path().into(),
+            last_project: app.global::<Bs2Config>().get_last_project() as u32,
             ..Config::read()
         }
         .write();
@@ -72,14 +76,14 @@ fn main() -> Result<(), slint::PlatformError> {
     app.global::<ProjectsPageLogic>()
         .on_update_project_selection(move || {
             let app = app_inner.unwrap();
+            let new_projects = iter::once("➕︎ Create New Project")
+                .chain(Config::read().projects.iter().map(|p| p.name.as_str()))
+                .map(std::convert::Into::into)
+                .collect::<Vec<_>>();
             app.global::<ProjectsPageLogic>()
-                .set_project_selection(ModelRc::from(
-                    iter::once("➕︎ Create New Project")
-                        .chain(Config::read().projects.iter().map(|p| p.name.as_str()))
-                        .map(std::convert::Into::into)
-                        .collect::<Vec<_>>()
-                        .as_ref(),
-                ));
+                .set_project_selection(ModelRc::from(new_projects.as_ref()));
+            app.global::<Bs2Config>()
+                .set_last_project((new_projects.len() - 1) as i32);
         });
 
     app.global::<ProjectsPageLogic>()
@@ -135,10 +139,23 @@ fn main() -> Result<(), slint::PlatformError> {
                     .join(name.as_str()),
             )
             .expect("Oof");
+            app.global::<ProjectsPageLogic>()
+                .set_new_project_name("".into());
+            app.global::<ProjectsPageLogic>()
+                .set_new_project_path("".into());
             config.write();
         });
+    let app_inner = app.as_weak();
     app.global::<ProjectsPageLogic>()
         .on_launch_tools(move |name| {
+            let app = app_inner.unwrap();
+            let index = app
+                .global::<ProjectsPageLogic>()
+                .get_project_selection()
+                .iter()
+                .position(|p| p == name)
+                .unwrap_or_default();
+            app.global::<Bs2Config>().set_last_project(index as i32);
             // Source: https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags
             const DETACHED_PROCESS: u32 = 0x00000008;
             const CREATE_NEW_PROCESS_GROUP: u32 = 0x00000200;
