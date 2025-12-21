@@ -26,9 +26,14 @@ export global ProjectsPageLogic {
     callback update-project-selection();
     pure callback read-project(string) -> ProjectDef;
     callback create-project();
-    in-out property <[string]> project-selection: ["foo", "bar"];
+    in-out property <[string]> project-selection;
     in-out property <string> new-project-name;
     in-out property <string> new-project-path;
+    in property <string> new-project-name-err;
+    in property <string> new-project-path-err;
+    in property <string> creation-error;
+    callback validate-new-project-path(string);
+    callback validate-new-project-name(string);
 }
 
 export global Bs2Config {

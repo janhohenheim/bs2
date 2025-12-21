@@ -1,4 +1,4 @@
-use std::{fs, iter, os::windows::process::CommandExt as _, process::Command};
+use std::{fs, iter, os::windows::process::CommandExt as _, path::PathBuf, process::Command};
 
 use slint::{ComponentHandle as _, Model as _, ModelRc};
 
@@ -110,4 +110,51 @@ pub(super) fn plugin(app: &App) {
                     .expect("failed to actually run executable");
             });
         });
+
+    let app_inner = app.as_weak();
+    app.global::<ProjectsPageLogic>()
+        .on_validate_new_project_name(move |name| {
+            let app = app_inner.unwrap();
+            if name.is_empty() {
+                app.global::<ProjectsPageLogic>()
+                    .set_new_project_name_err("".into());
+            } else if is_ascii_rust_ident(name.as_str()) {
+                app.global::<ProjectsPageLogic>()
+                    .set_new_project_name_err("".into());
+            } else {
+                app.global::<ProjectsPageLogic>()
+                    .set_new_project_name_err("Project name must start with a letter, only contain English letters, digits, or the separator _, and have no spaces.".into());
+            }
+        });
+
+    let app_inner = app.as_weak();
+    app.global::<ProjectsPageLogic>()
+        .on_validate_new_project_path(move |path| {
+            let app = app_inner.unwrap();
+            if path.is_empty() {
+                app.global::<ProjectsPageLogic>()
+                    .set_new_project_path_err("".into());
+            } else if !PathBuf::from(path.as_str()).exists() {
+                app.global::<ProjectsPageLogic>()
+                    .set_new_project_path_err("Project path doesn't exist".into());
+            } else {
+                app.global::<ProjectsPageLogic>()
+                    .set_new_project_path_err("".into());
+            }
+        });
+}
+
+fn is_ascii_rust_ident(s: &str) -> bool {
+    let mut chars = s.bytes();
+
+    let Some(first) = chars.next() else {
+        return false;
+    };
+
+    match first {
+        b'a'..=b'z' | b'A'..=b'Z' | b'_' => {}
+        _ => return false,
+    }
+
+    chars.all(|b| matches!(b, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_'))
 }

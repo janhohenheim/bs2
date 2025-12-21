@@ -68,41 +68,13 @@ export component ProjectsPage inherits Page {
                 GridLayout {
                     Row {
                         Text {
-                            text: "Directory:";
-                            vertical-alignment: center;
-                            horizontal-alignment: right;
-                        }
-
-                        Rectangle {
-                            background: Palette.background;
-                            HorizontalLayout {
-                                LineEdit {
-                                    text <=> ProjectsPageLogic.new-project-path;
-                                    placeholder-text: "Path to the project root containing Cargo.toml";
-                                    accepted => {
-                                    }
-                                    horizontal_stretch: 1;
-                                }
-
-                                Button {
-                                    text: "📂";
-                                    clicked => {
-                                        ProjectsPageLogic.pick-project(ProjectsPageLogic.new-project-path);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Row {
-                        Text {
                             text: "Name:";
                             vertical-alignment: center;
                             horizontal-alignment: right;
                         }
 
                         Rectangle {
-                            background: Palette.background;
+                            background: ProjectsPageLogic.new-project-name-err == "" ? Palette.background : red.with-alpha(0.2);
 
                             HorizontalLayout {
                                 LineEdit {
@@ -111,15 +83,83 @@ export component ProjectsPage inherits Page {
                                     accepted => {
                                         create-btn.clicked()
                                     }
+                                    changed text => {
+                                        ProjectsPageLogic.validate-new-project-name(self.text)
+                                    }
                                     horizontal_stretch: 1;
                                 }
                             }
                         }
+
+                        Rectangle { }
+                    }
+
+                    Row {
+                        Rectangle { }
+
+                        Text {
+                            text: ProjectsPageLogic.new-project-name-err;
+                            color: red;
+                            vertical-alignment: center;
+                            wrap: word-wrap;
+                            height: 20px;
+                        }
+
+                        Rectangle { }
+                    }
+
+                    Row {
+                        Text {
+                            text: "Directory:";
+                            vertical-alignment: center;
+                            horizontal-alignment: right;
+                            width: 80px;
+                        }
+
+                        Rectangle {
+                            background: ProjectsPageLogic.new-project-path-err == "" ? Palette.background : red.with-alpha(0.2);
+                            HorizontalLayout {
+                                LineEdit {
+                                    text <=> ProjectsPageLogic.new-project-path;
+                                    placeholder-text: "Path where project data should be exported to";
+                                    accepted => {
+                                        create-btn.clicked()
+                                    }
+                                    changed text => {
+                                        ProjectsPageLogic.validate-new-project-path(self.text)
+                                    }
+                                    horizontal_stretch: 1;
+                                }
+                            }
+                        }
+
+                        Button {
+                            text: "📂";
+                            width: 40px;
+                            clicked => {
+                                ProjectsPageLogic.pick-project(ProjectsPageLogic.new-project-path);
+                            }
+                        }
+                    }
+
+                    Row {
+                        Rectangle { }
+
+                        Text {
+                            text: ProjectsPageLogic.new-project-path-err;
+                            color: red;
+                            vertical-alignment: center;
+                            wrap: word-wrap;
+                            height: 20px;
+                        }
+
+                        Rectangle { }
                     }
                 }
 
                 create-btn := Button {
                     text: "Create";
+                    enabled: ProjectsPageLogic.new-project-name-err == "" && ProjectsPageLogic.new-project-path-err == "" && ProjectsPageLogic.new-project-name != "" && ProjectsPageLogic.new-project-path != "";
                     clicked => {
                         ProjectsPageLogic.create-project();
                         ProjectsPageLogic.update-project-selection();
