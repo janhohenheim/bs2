@@ -56,8 +56,7 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
         let app = app.unwrap();
         if !working_dir().join("template").exists() {
             app.global::<SetupPageLogic>()
-                .set_toast("Cannot set up BS2: the template/ directory is missing. Try completely uninstalling and reinstalling BS2.".to_string().into());
-            app.global::<SetupPageLogic>().set_toast_error(true);
+                .set_toast((true, "Cannot set up BS2: the template/ directory is missing. Try completely uninstalling and reinstalling BS2.".to_string().into()));
             return;
         }
         if is_locked(
@@ -68,12 +67,11 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                 .join("engine2.dll"),
         ) {
             app.global::<SetupPageLogic>()
-                .set_toast("Cannot set up BS2 while the Source 2 Tools are in use. Please close all of them first.".to_string().into());
-            app.global::<SetupPageLogic>().set_toast_error(true);
+                .set_toast((true, "Cannot set up BS2 while the Source 2 Tools are in use. Please close all of them first.".to_string().into()));
             return;
         }
         app.set_setup_done(false);
-        app.global::<SetupPageLogic>().set_toast("".into());
+        app.global::<SetupPageLogic>().set_toast((false, "".into()));
         let cs2_path = PathBuf::from(app.global::<Bs2Config>().get_cs2_path().as_str());
         let app = app.as_weak();
         std::thread::spawn(move || {
@@ -97,8 +95,7 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                 slint::invoke_from_event_loop(move || {
                     let app = app.unwrap();
                     app.global::<SetupPageLogic>()
-                        .set_toast(format!("Failed to create {canon_dest}: {e}").into());
-                    app.global::<SetupPageLogic>().set_toast_error(true);
+                        .set_toast((true, format!("Failed to create {canon_dest}: {e}").into()));
                 })
                 .expect("Slint main loop should be running");
                 return;
@@ -112,8 +109,7 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                     slint::invoke_from_event_loop(move || {
                         let app = app.unwrap();
                         app.global::<SetupPageLogic>()
-                            .set_toast(format!("Failed to create {canon}: {e}").into());
-                        app.global::<SetupPageLogic>().set_toast_error(true);
+                            .set_toast((true, format!("Failed to create {canon}: {e}").into()));
                     })
                     .expect("Slint main loop should be running");
                     return;
@@ -141,9 +137,10 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                     let app = app_inner.clone();
                     slint::invoke_from_event_loop(move || {
                         let app = app.unwrap();
-                        app.global::<SetupPageLogic>()
-                            .set_copied_thing(path.to_string_lossy().to_string().into());
-                        app.global::<SetupPageLogic>().set_progress(progress as f32);
+                        app.global::<SetupPageLogic>().set_copy_progress((
+                            path.to_string_lossy().to_string().into(),
+                            progress as f32,
+                        ));
                     })
                     .expect("Slint main loop should be running");
                     TransitProcessResult::ContinueOrAbort
@@ -158,11 +155,10 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                     info!("Successfully copied {written} bytes from {sources:?} to {canon_dest}",);
                     slint::invoke_from_event_loop(move || {
                         let app = app.unwrap();
-                        app.global::<SetupPageLogic>().set_copied_thing("".into());
+                        app.global::<SetupPageLogic>().set_copy_progress(("".into(), 0.0));
                         app.set_setup_done(true);
                         app.global::<SetupPageLogic>()
-                            .set_toast("BS2 was successfully set up! Switch to the \"Projects\" tab now to manage your projects and launch the Source 2 tools.".into());
-                        app.global::<SetupPageLogic>().set_toast_error(false);
+                            .set_toast((false, "BS2 was successfully set up! Switch to the \"Projects\" tab now to manage your projects and launch the Source 2 tools.".into()));
                     })
                     .expect("Slint main loop should be running");
                 }
@@ -172,10 +168,9 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                     );
                     slint::invoke_from_event_loop(move || {
                         let app = app.unwrap();
-                        app.global::<SetupPageLogic>().set_copied_thing("".into());
+                        app.global::<SetupPageLogic>().set_copy_progress(("".into(), 0.0));
                         app.global::<SetupPageLogic>()
-                            .set_toast(format!("Failed to set up BS2: wrote only {written} bytes out of {total_bytes}. Please try again.").into());
-                        app.global::<SetupPageLogic>().set_toast_error(true);
+                            .set_toast((true,format!("Failed to set up BS2: wrote only {written} bytes out of {total_bytes}. Please try again.").into()));
                     })
                     .expect("Slint main loop should be running");
                 }
@@ -183,10 +178,12 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                     error!("Failed to copy {sources:?} to {canon_dest}: {e}");
                     slint::invoke_from_event_loop(move || {
                         let app = app.unwrap();
-                        app.global::<SetupPageLogic>().set_copied_thing("".into());
                         app.global::<SetupPageLogic>()
-                            .set_toast(format!("Failed to set up BS2: {e} ({:?})", e.kind).into());
-                        app.global::<SetupPageLogic>().set_toast_error(true);
+                            .set_copy_progress(("".into(), 0.0));
+                        app.global::<SetupPageLogic>().set_toast((
+                            true,
+                            format!("Failed to set up BS2: {e} ({:?})", e.kind).into(),
+                        ));
                     })
                     .expect("Slint main loop should be running");
                 }

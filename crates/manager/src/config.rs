@@ -3,7 +3,7 @@ use slint::ComponentHandle as _;
 use std::{fs, path::PathBuf, sync::LazyLock};
 use tracing::{error, info};
 
-use crate::{App, Bs2Config, SetupPageLogic, canonicalize, working_dir};
+use crate::{App, Bs2Config, canonicalize, working_dir};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Config {

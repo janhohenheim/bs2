@@ -42,10 +42,10 @@ export component SetupPage inherits Page {
         }
 
         Rectangle {
-            background: SetupPageLogic.copied_thing != "" ? Palette.background : SetupPageLogic.cs2-state == Cs2State.Good ? green.with-alpha(0.2) : SetupPageLogic.cs2-state == Cs2State.GameOnly ? orange.with-alpha(0.2) : red.with-alpha(0.2);
+            background: SetupPageLogic.copy-progress.path != "" ? Palette.background : SetupPageLogic.cs2-state == Cs2State.Good ? green.with-alpha(0.2) : SetupPageLogic.cs2-state == Cs2State.GameOnly ? orange.with-alpha(0.2) : red.with-alpha(0.2);
             HorizontalLayout {
                 LineEdit {
-                    enabled: SetupPageLogic.copied_thing == "";
+                    enabled: SetupPageLogic.copy-progress.path == "";
                     text <=> SetupPageLogic.cs2-path;
                     accepted => {
                         if SetupPageLogic.cs2-state == Cs2State.Good {
@@ -64,7 +64,7 @@ export component SetupPage inherits Page {
 
                 open_button := Button {
                     text: "📂";
-                    enabled: SetupPageLogic.copied_thing == "";
+                    enabled: SetupPageLogic.copy-progress.path == "";
                     clicked => {
                         SetupPageLogic.pick-cs2(SetupPageLogic.cs2-path)
                     }
@@ -83,28 +83,28 @@ export component SetupPage inherits Page {
         color: orange.with-alpha(0.7);
     }
 
-    if SetupPageLogic.copied_thing != "": VerticalBox {
+    if SetupPageLogic.copy-progress.path != "": VerticalBox {
         alignment: start;
         Text {
-            text: "Copying \{SetupPageLogic.copied_thing}...";
+            text: "Copying \{SetupPageLogic.copy-progress.path}...";
         }
 
         ProgressIndicator {
-            progress: SetupPageLogic.progress;
+            progress: SetupPageLogic.copy-progress.progress;
         }
     }
-    if SetupPageLogic.toast != "": VerticalBox {
+    if SetupPageLogic.toast.msg != "": VerticalBox {
         alignment: start;
         Text {
-            text: SetupPageLogic.toast;
-            color: SetupPageLogic.toast_error ? red : green;
+            text: SetupPageLogic.toast.msg;
+            color: SetupPageLogic.toast.is-err ? red : green;
         }
     }
 
     Button {
         height: 40px;
-        text: root.setup-done ? "Update" : "Install";
-        enabled: SetupPageLogic.cs2-state == Cs2State.Good && SetupPageLogic.copied_thing == "";
+        text: SetupPageLogic.copy-progress.path != "" ? "Copying files..." : root.setup-done ? "Update" : "Install";
+        enabled: SetupPageLogic.cs2-state == Cs2State.Good && SetupPageLogic.copy-progress.path == "";
         clicked => {
             SetupPageLogic.run-setup()
         }

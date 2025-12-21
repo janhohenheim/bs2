@@ -2,24 +2,14 @@
 slint::include_modules!();
 
 use std::env;
-use std::fs;
-use std::iter;
-use std::os::windows::process::CommandExt as _;
 use std::path::PathBuf;
-use std::process::Command;
 
 mod config;
 mod projects;
 mod setup;
 use config::Config;
-use slint::Model;
-use slint::ModelRc;
 use slint::SharedString;
 
-use crate::config::Project;
-use crate::setup::is_setup_done;
-use crate::setup::run_setup;
-use crate::setup::update_cs2_state;
 
 fn main() -> Result<(), slint::PlatformError> {
     tracing_subscriber::fmt::init();

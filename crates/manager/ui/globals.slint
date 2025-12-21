@@ -10,11 +10,9 @@ export global SetupPageLogic {
     callback update-cs2-state();
     callback pick-cs2(string);
     in property <Cs2State> cs2-state;
-    in property <string> copied_thing;
-    in property <string> toast;
+    in property <{path: string, progress: float}> copy-progress;
+    in property <{msg: string, is-err: bool}> toast;
     in-out property <string> cs2-path;
-    in property <bool> toast_error;
-    in property <float> progress;
 }
 
 export struct ProjectDef {
