@@ -122,13 +122,15 @@ fn main() -> Result<(), slint::PlatformError> {
                     .into(),
             });
             fs::create_dir_all(
-                PathBuf::from("game")
+                working_dir()
+                    .join("game")
                     .join("core_addons")
                     .join(name.as_str()),
             )
             .expect("Oof");
             fs::create_dir_all(
-                PathBuf::from("content")
+                working_dir()
+                    .join("content")
                     .join("core_addons")
                     .join(name.as_str()),
             )
@@ -141,17 +143,23 @@ fn main() -> Result<(), slint::PlatformError> {
             const DETACHED_PROCESS: u32 = 0x00000008;
             const CREATE_NEW_PROCESS_GROUP: u32 = 0x00000200;
 
-            let dir = PathBuf::from("game").join("bin").join("win64");
+            let dir = working_dir().join("game").join("bin").join("win64");
             let path = dir.join("bs2_launcher.exe");
             Command::new(path)
                 .creation_flags(DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)
                 .current_dir(dir)
-                .args(["-addon", name.as_str()])
+                .args([format!("-addon {name}")])
                 .spawn()
                 .expect("failed to start executable");
         });
 
     app.run()
+}
+
+fn working_dir() -> PathBuf {
+    let mut path = env::current_exe().unwrap_or_else(|_| PathBuf::new());
+    path.pop();
+    path
 }
 
 fn canonicalize(path: impl Into<PathBuf>) -> String {
