@@ -121,6 +121,9 @@ pub(super) fn plugin(app: &App) {
             } else if is_ascii_rust_ident(name.as_str()) {
                 app.global::<ProjectsPageLogic>()
                     .set_new_project_name_err("".into());
+            } else if Config::read().projects.iter().any(|p| p.name.as_str() == name.as_str()) {
+                app.global::<ProjectsPageLogic>()
+                    .set_new_project_name_err("A project with this name already exists.".into());
             } else {
                 app.global::<ProjectsPageLogic>()
                     .set_new_project_name_err("Project name must start with a letter, only contain English letters, digits, or the separator _, and have no spaces.".into());
