@@ -14,8 +14,8 @@ Bevy ↔ Source 2 Tools integration.
 
 ## License
 
-BS2 is copyright by Jan Hohenheim, licensed at your discretion with either the MIT License or the Apache License 2.0.
+BS2 is copyright by Jan Hohenheim, licensed at your discretion with either the [MIT License](/license-mit.txt) or the [Apache License 2.0](./license-apache-2.0.txt).
 
-This application and the BS2 project in general are not affiliated with Valve Corporation in any way. Source 2 and Counter Strike are trademarks and/or registered trademarks of Valve Corporation. The tools managed by this software must be legally acquired and licensed to you. As of time of writing (2025-12-19), this means acquiring and downloading them over Steam and agreeing to the [Steam Subscriber Agreement](https://store.steampowered.com/subscriber_agreement). Please acquaint yourself with this text before using BS2. In particular, we urge you to carefully read section 2.C. "License to Use Valve Developer Tools". Do not use assets belonging to Valve Corporation. Do not use BS2 for commercial purposes.
+BS2 is not affiliated with [Valve Corporation](https://www.valvesoftware.com/en/about) in any way. Source 2 and Counter Strike are trademarks and/or registered trademarks of Valve Corporation. The tools managed by this software must be legally acquired and licensed to you. As of time of writing (2025-12-19), this means acquiring and downloading them over Steam and agreeing to the [Steam Subscriber Agreement](https://store.steampowered.com/subscriber_agreement). Please acquaint yourself with this text before using BS2. In particular, we urge you to carefully read section 2.C. "License to Use Valve Developer Tools". Do not use assets belonging to Valve Corporation. Do not use BS2 for commercial purposes.
 
-This application and the BS2 project in general are not affiliated with [Bevy Foundation](https://bevy.org/). Bevy Engine is a trademark and/or registered trademark belonging to Bevy Foundation.
+BS2 is not affiliated with [Bevy Foundation](https://bevy.org/). Bevy Engine is a trademark and/or registered trademark belonging to Bevy Foundation.
