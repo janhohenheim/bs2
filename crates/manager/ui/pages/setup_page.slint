@@ -20,7 +20,7 @@ import {
     Palette,
 } from "std-widgets.slint";
 import { Page } from "page.slint";
-import { SetupPageLogic, Bs2Config } from "../globals.slint";
+import { SetupPageLogic, Bs2Config, Cs2State } from "../globals.slint";
 
 
 export component SetupPage inherits Page {
@@ -42,19 +42,20 @@ export component SetupPage inherits Page {
         }
 
         Rectangle {
-            background: SetupPageLogic.copied_thing != "" ? Palette.background : SetupPageLogic.cs2-state == "good" ? green.with-alpha(0.2) : SetupPageLogic.cs2-state == "only-game" ? orange.with-alpha(0.2) : red.with-alpha(0.2);
+            background: SetupPageLogic.copied_thing != "" ? Palette.background : SetupPageLogic.cs2-state == Cs2State.Good ? green.with-alpha(0.2) : SetupPageLogic.cs2-state == Cs2State.GameOnly ? orange.with-alpha(0.2) : red.with-alpha(0.2);
             HorizontalLayout {
                 LineEdit {
                     enabled: SetupPageLogic.copied_thing == "";
                     text <=> SetupPageLogic.cs2-path;
                     accepted => {
-                        if SetupPageLogic.cs2-state == "good" {
+                        if SetupPageLogic.cs2-state == Cs2State.Good {
                             SetupPageLogic.run-setup()
                         }
                     }
+
                     changed text => {
                         SetupPageLogic.update-cs2-state();
-                        if SetupPageLogic.cs2-state == "good" {
+                        if SetupPageLogic.cs2-state == Cs2State.Good {
                             Bs2Config.cs2_path = SetupPageLogic.cs2-path;
                         }
                     }
@@ -65,19 +66,19 @@ export component SetupPage inherits Page {
                     text: "📂";
                     enabled: SetupPageLogic.copied_thing == "";
                     clicked => {
-                        SetupPageLogic.pick-cs2()
+                        SetupPageLogic.pick-cs2(SetupPageLogic.cs2-path)
                     }
                 }
             }
         }
     }
 
-    if SetupPageLogic.cs2-state == "none": Text {
+    if SetupPageLogic.cs2-state == Cs2State.None: Text {
         text: "Counter Strike 2 is not installed at the above location. Consult the guide.";
         color: red.with-alpha(0.7);
     }
 
-    if SetupPageLogic.cs2-state == "only-game": Text {
+    if SetupPageLogic.cs2-state == Cs2State.GameOnly: Text {
         text: "Counter Strike 2 is installed at the above location, but the Workshop has not been enabled. Consult the guide.";
         color: orange.with-alpha(0.7);
     }
@@ -103,7 +104,7 @@ export component SetupPage inherits Page {
     Button {
         height: 40px;
         text: root.setup-done ? "Update" : "Install";
-        enabled: SetupPageLogic.cs2-state == "good" && SetupPageLogic.copied_thing == "";
+        enabled: SetupPageLogic.cs2-state == Cs2State.Good && SetupPageLogic.copied_thing == "";
         clicked => {
             SetupPageLogic.run-setup()
         }

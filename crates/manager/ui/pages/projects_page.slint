@@ -43,8 +43,8 @@ export component ProjectsPage inherits Page {
             }
 
             project-box := ComboBox {
-                model: ProjectsPageLogic.project-selection();
-                current-index: 0;
+                model <=> ProjectsPageLogic.project-selection;
+                current-index <=> ProjectsPageLogic.project-idx;
             }
         }
 
@@ -76,10 +76,7 @@ export component ProjectsPage inherits Page {
                                 Button {
                                     text: "📂";
                                     clicked => {
-                                        let path = ProjectsPageLogic.pick-project();
-                                        if path != "" {
-                                            ProjectsPageLogic.new-project-path = path;
-                                        }
+                                        ProjectsPageLogic.pick-project(ProjectsPageLogic.new-project-path);
                                     }
                                 }
                             }
@@ -101,6 +98,7 @@ export component ProjectsPage inherits Page {
                                     text <=> ProjectsPageLogic.new-project-name;
                                     placeholder-text: "project_name";
                                     accepted => {
+                                        create-btn.clicked()
                                     }
                                     horizontal_stretch: 1;
                                 }
@@ -109,9 +107,13 @@ export component ProjectsPage inherits Page {
                     }
                 }
 
-                Button {
+                create-btn := Button {
                     text: "Create";
                     clicked => {
+                        ProjectsPageLogic.create-project();
+                        ProjectsPageLogic.update-project-selection();
+                        let total = ProjectsPageLogic.project-selection;
+                        ProjectsPageLogic.project-idx = total.length - 1;
                     }
                 }
             }
@@ -128,7 +130,7 @@ export component ProjectsPage inherits Page {
                         horizontal-alignment: right;
                     }
 
-                    Text {
+                    name := Text {
                         text: ProjectsPageLogic.read-project(project-box.current-value).path;
                         vertical-alignment: center;
                         horizontal-alignment: right;
@@ -137,6 +139,9 @@ export component ProjectsPage inherits Page {
 
                 Button {
                     text: "Launch Tools";
+                    clicked => {
+                        ProjectsPageLogic.launch-tools(name.text)
+                    }
                 }
             }
         }

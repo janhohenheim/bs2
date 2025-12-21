@@ -1,9 +1,16 @@
+export enum Cs2State {
+    None,
+    GameOnly,
+    Good
+}
+
+
 export global SetupPageLogic {
     callback run-setup();
     callback update-cs2-state();
-    callback pick-cs2;
+    callback pick-cs2(string);
     callback write-config;
-    in property <string> cs2-state: "none";
+    in property <Cs2State> cs2-state;
     in property <string> copied_thing;
     in property <string> toast;
     in-out property <string> cs2-path;
@@ -17,11 +24,15 @@ export struct ProjectDef {
 }
 
 export global ProjectsPageLogic {
-    callback pick-project() -> string;
-    pure callback project-selection() -> [string];
+    callback pick-project(string);
+    callback launch-tools(string);
+    callback update-project-selection();
     pure callback read-project(string) -> ProjectDef;
+    callback create-project();
+    in-out property <[string]> project-selection;
     in-out property <string> new-project-name;
     in-out property <string> new-project-path;
+    in-out property <int> project-idx;
 }
 
 export global Bs2Config {

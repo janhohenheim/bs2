@@ -10,6 +10,7 @@ use tracing::info;
 
 use crate::App;
 use crate::Bs2Config;
+use crate::Cs2State;
 use crate::SetupPageLogic;
 use crate::canonicalize;
 
@@ -155,7 +156,7 @@ pub(crate) fn update_cs2_state(app: slint::Weak<App>) -> impl FnMut() {
             .join("engine2.dll");
         let engine_exists = engine_dll.exists();
         if !engine_exists {
-            app.global::<SetupPageLogic>().set_cs2_state("none".into());
+            app.global::<SetupPageLogic>().set_cs2_state(Cs2State::None);
             return;
         }
         let workshop_fgd = PathBuf::from(cs2_path.as_str())
@@ -164,32 +165,9 @@ pub(crate) fn update_cs2_state(app: slint::Weak<App>) -> impl FnMut() {
             .join("base.fgd");
         if !workshop_fgd.exists() {
             app.global::<SetupPageLogic>()
-                .set_cs2_state("only-game".into());
+                .set_cs2_state(Cs2State::GameOnly);
         } else {
-            app.global::<SetupPageLogic>().set_cs2_state("good".into());
+            app.global::<SetupPageLogic>().set_cs2_state(Cs2State::Good);
         }
-    }
-}
-
-pub(crate) fn pick_cs2(app: slint::Weak<App>) -> impl FnMut() {
-    move || {
-        let app = app.unwrap();
-        slint::spawn_local(async move {
-            let current = app.global::<SetupPageLogic>().get_cs2_path();
-            let path = rfd::AsyncFileDialog::new()
-                .set_parent(&app.window().window_handle())
-                .set_can_create_directories(false)
-                .set_directory(current)
-                .set_title("Choose Counter Strike 2 install path")
-                .pick_folder()
-                .await;
-            let Some(path) = path else {
-                return;
-            };
-            app.global::<SetupPageLogic>()
-                .set_cs2_path(path.path().to_string_lossy().to_string().into());
-            update_cs2_state(app.as_weak())();
-        })
-        .expect("Slint event loop should already be initialized");
     }
 }

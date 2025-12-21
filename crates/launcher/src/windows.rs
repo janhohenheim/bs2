@@ -88,8 +88,6 @@ pub(crate) fn run() {
                 // The "game" is the hollowed-out core of cs2
                 // Todo: find out how to rename this so that everything still works
                 "-game core",
-                // Need to run an addon, any addon, to save stuff properly
-                "-addon foo",
                 // Min size before asserts trigger when run with -dev
                 "-w 4",
                 "-h 4",
