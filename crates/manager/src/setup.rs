@@ -75,8 +75,7 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
         let cs2_path = PathBuf::from(app.global::<Bs2Config>().get_cs2_path().as_str());
         let app = app.as_weak();
         std::thread::spawn(move || {
-            let cs2_game_paths_to_copy =
-                ["core", "_toolsettings", "thirdpartylegalnotices.txt", "bin"];
+            let cs2_game_paths_to_copy = ["core", "thirdpartylegalnotices.txt", "bin"];
             let template_game_paths_to_copy = ["bin", "core", "core_addons"];
 
             let sources: Vec<_> = cs2_game_paths_to_copy
