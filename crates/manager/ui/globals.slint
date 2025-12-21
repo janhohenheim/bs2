@@ -9,7 +9,6 @@ export global SetupPageLogic {
     callback run-setup();
     callback update-cs2-state();
     callback pick-cs2(string);
-    callback write-config;
     in property <Cs2State> cs2-state;
     in property <string> copied_thing;
     in property <string> toast;
@@ -35,8 +34,9 @@ export global ProjectsPageLogic {
 }
 
 export global Bs2Config {
+    callback write-config;
     in-out property <string> cs2_path;
-    changed cs2_path => SetupPageLogic.write-config();
+    changed cs2_path => self.write-config();
     in-out property <int> last_project;
-    changed last_project => SetupPageLogic.write-config();
+    changed last_project => self.write-config();
 }

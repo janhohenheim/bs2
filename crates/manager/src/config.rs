@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
+use slint::ComponentHandle as _;
 use std::{fs, path::PathBuf, sync::LazyLock};
 use tracing::{error, info};
 
-use crate::{canonicalize, working_dir};
+use crate::{App, Bs2Config, SetupPageLogic, canonicalize, working_dir};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Config {
@@ -94,4 +95,22 @@ impl Config {
         let config = Self::default();
         config.write();
     }
+}
+
+pub(super) fn plugin(app: &App) {
+    let config = Config::read();
+    app.global::<Bs2Config>()
+        .set_cs2_path(config.cs2_path.clone().into());
+    app.global::<Bs2Config>()
+        .set_last_project(config.last_project as i32);
+    let app_inner = app.as_weak();
+    app.global::<Bs2Config>().on_write_config(move || {
+        let app = app_inner.unwrap();
+        Config {
+            cs2_path: app.global::<Bs2Config>().get_cs2_path().into(),
+            last_project: app.global::<Bs2Config>().get_last_project() as u32,
+            ..Config::read()
+        }
+        .write();
+    });
 }

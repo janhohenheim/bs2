@@ -14,7 +14,42 @@ use crate::Bs2Config;
 use crate::Cs2State;
 use crate::SetupPageLogic;
 use crate::canonicalize;
+use crate::config::Config;
+use crate::pick_path;
 use crate::working_dir;
+
+pub(super) fn plugin(app: &App) {
+    let config = Config::read();
+    app.global::<SetupPageLogic>()
+        .set_cs2_path(config.cs2_path.into());
+
+    let app_inner = app.as_weak();
+    update_cs2_state(app_inner)();
+
+    let is_setup_done = is_setup_done();
+    app.set_setup_done(is_setup_done);
+    if is_setup_done {
+        app.set_current_item(1);
+    }
+
+    let app_inner = app.as_weak();
+    app.global::<SetupPageLogic>()
+        .on_run_setup(run_setup(app_inner));
+
+    let app_inner = app.as_weak();
+    app.global::<SetupPageLogic>()
+        .on_update_cs2_state(update_cs2_state(app_inner));
+
+    let app_inner = app.as_weak();
+    app.global::<SetupPageLogic>().on_pick_cs2(pick_path(
+        app_inner,
+        "Choose Counter Strike 2 install path",
+        |app, path| {
+            app.global::<SetupPageLogic>().set_cs2_path(path);
+            update_cs2_state(app.as_weak())();
+        },
+    ));
+}
 
 pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
     move || {
