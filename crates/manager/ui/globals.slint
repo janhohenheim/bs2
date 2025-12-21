@@ -18,8 +18,10 @@ export struct ProjectDef {
 
 export global ProjectsPageLogic {
     callback pick-project() -> string;
-    in-out property <ProjectDef> new-project;
-    in-out property <[ProjectDef]> projects: [{ name: "foo", path: "bar" }];
+    pure callback project-selection() -> [string];
+    pure callback read-project(string) -> ProjectDef;
+    in-out property <string> new-project-name;
+    in-out property <string> new-project-path;
 }
 
 export global Bs2Config {

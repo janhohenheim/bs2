@@ -4,15 +4,22 @@ use tracing::{error, info};
 
 use crate::canonicalize;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Config {
     pub(crate) cs2_path: String,
+    pub(crate) projects: Vec<Project>,
 }
 
 impl Default for Config {
     fn default() -> Self {
-        Self { cs2_path: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\".into() }
+        Self { cs2_path: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\".into(), projects: Vec::new() }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub(crate) struct Project {
+    pub(crate) name: String,
+    pub(crate) path: String,
 }
 
 static PATH: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from("config.toml"));

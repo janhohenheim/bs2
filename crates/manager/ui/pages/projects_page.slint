@@ -18,6 +18,7 @@ import {
     DatePickerPopup,
     Palette,
     ListView,
+    StandardButton,
 } from "std-widgets.slint";
 import { Page } from "page.slint";
 import { ProjectsPageLogic, ProjectDef } from "../globals.slint";
@@ -33,10 +34,26 @@ export component ProjectsPage inherits Page {
             text: "Manage your projects and launch the Source 2 Tools. If you need help setting up the Bevy side of things, see the guide.";
         }
 
-        GroupBox {
+        HorizontalBox {
+            alignment: start;
+            Text {
+                vertical-alignment: center;
+                horizontal-alignment: right;
+                text: "Project:";
+            }
+
+            project-box := ComboBox {
+                model: ProjectsPageLogic.project-selection();
+                current-index: 0;
+            }
+        }
+
+        if project-box.current-index == 0: GroupBox {
             title: "New Project";
+
             VerticalBox {
                 alignment: start;
+
                 GridLayout {
                     Row {
                         Text {
@@ -49,12 +66,9 @@ export component ProjectsPage inherits Page {
                             background: Palette.background;
                             HorizontalLayout {
                                 LineEdit {
-                                    text: ProjectsPageLogic.new-project.path;
+                                    text <=> ProjectsPageLogic.new-project-path;
                                     placeholder-text: "Path to the project root containing Cargo.toml";
                                     accepted => {
-                                    }
-                                    changed text => {
-                                        ProjectsPageLogic.new-project.path = self.text;
                                     }
                                     horizontal_stretch: 1;
                                 }
@@ -64,7 +78,7 @@ export component ProjectsPage inherits Page {
                                     clicked => {
                                         let path = ProjectsPageLogic.pick-project();
                                         if path != "" {
-                                            ProjectsPageLogic.new-project.path = path;
+                                            ProjectsPageLogic.new-project-path = path;
                                         }
                                     }
                                 }
@@ -81,14 +95,12 @@ export component ProjectsPage inherits Page {
 
                         Rectangle {
                             background: Palette.background;
+
                             HorizontalLayout {
                                 LineEdit {
-                                    text: ProjectsPageLogic.new-project.name;
+                                    text <=> ProjectsPageLogic.new-project-name;
                                     placeholder-text: "project_name";
                                     accepted => {
-                                    }
-                                    changed text => {
-                                        ProjectsPageLogic.new-project.name = self.text;
                                     }
                                     horizontal_stretch: 1;
                                 }
@@ -98,44 +110,33 @@ export component ProjectsPage inherits Page {
                 }
 
                 Button {
-                    text: "+";
+                    text: "Create";
                     clicked => {
                     }
                 }
             }
         }
 
-        Text {
-            text: "Launch existing projects";
-        }
-
-        VerticalBox {
-            ListView {
-                for project in ProjectsPageLogic.projects: Rectangle {
-                    width: parent.width;
-                    HorizontalBox {
-                        alignment: start;
-                        Text {
-                            text: project.name;
-                            horizontal-alignment: right;
-                            vertical-alignment: center;
-                        }
-
-                        Rectangle {
-                            background: gray;
-                            width: 100px;
-                            text := Text {
-                                width: parent.width;
-                                text: project.path;
-                            }
-                        }
-
-                        Rectangle {
-                            Button {
-                                text: "Launch";
-                            }
-                        }
+        if project-box.current-index >= 1: GroupBox {
+            title: project-box.current-value;
+            VerticalBox {
+                HorizontalBox {
+                    alignment: start;
+                    Text {
+                        text: "Path:";
+                        vertical-alignment: center;
+                        horizontal-alignment: right;
                     }
+
+                    Text {
+                        text: ProjectsPageLogic.read-project(project-box.current-value).path;
+                        vertical-alignment: center;
+                        horizontal-alignment: right;
+                    }
+                }
+
+                Button {
+                    text: "Launch Tools";
                 }
             }
         }
