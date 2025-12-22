@@ -149,15 +149,14 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                 .iter()
                 .map(|s| s.display().to_string())
                 .collect::<Vec<_>>();
+            let app_inner = app.clone();
             match result {
                 Ok(written) if written >= total_bytes => {
                     info!("Successfully copied {written} bytes from {sources:?} to {canon_dest}",);
                     slint::invoke_from_event_loop(move || {
-                        let app = app.unwrap();
-                        app.global::<SetupPageLogic>().set_copy_progress(("".into(), 0.0));
-                        app.set_setup_done(true);
+                        let app = app_inner.unwrap();
                         app.global::<SetupPageLogic>()
-                            .set_toast((false, "BS2 was successfully set up! Switch to the \"Projects\" tab now to manage your projects and launch the Source 2 tools.".into()));
+                            .set_copy_progress(("renaming files...".into(), 0.0));
                     })
                     .expect("Slint main loop should be running");
                 }
@@ -166,17 +165,18 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                         "Failed to copy {sources:?} to {canon_dest}: only wrote {written} bytes instead of {total_bytes}"
                     );
                     slint::invoke_from_event_loop(move || {
-                        let app = app.unwrap();
+                        let app = app_inner.unwrap();
                         app.global::<SetupPageLogic>().set_copy_progress(("".into(), 0.0));
                         app.global::<SetupPageLogic>()
                             .set_toast((true,format!("Failed to set up BS2: wrote only {written} bytes out of {total_bytes}. Please try again.").into()));
                     })
                     .expect("Slint main loop should be running");
+                    return;
                 }
                 Err(e) => {
                     error!("Failed to copy {sources:?} to {canon_dest}: {e}");
                     slint::invoke_from_event_loop(move || {
-                        let app = app.unwrap();
+                        let app = app_inner.unwrap();
                         app.global::<SetupPageLogic>()
                             .set_copy_progress(("".into(), 0.0));
                         app.global::<SetupPageLogic>().set_toast((
@@ -185,8 +185,59 @@ pub(crate) fn run_setup(app: slint::Weak<App>) -> impl FnMut() {
                         ));
                     })
                     .expect("Slint main loop should be running");
+                    return;
                 }
             };
+            let bin = dest.join("bin").join("win64");
+            let app_inner = app.clone();
+            let src = bin.join("resourcecompiler.exe");
+            let dest = bin.join("resourcecompiler_inner.exe");
+            if let Err(e) = fs::rename(&src, &dest) {
+                slint::invoke_from_event_loop(move || {
+                    let app = app_inner.unwrap();
+                    app.global::<SetupPageLogic>().set_toast((
+                        true,
+                        format!(
+                            "Failed to rename {} to {}: {e} ({:?})",
+                            src.display(),
+                            dest.display(),
+                            e.kind()
+                        )
+                        .into(),
+                    ));
+                })
+                .expect("Slint main loop should be running");
+                return;
+            }
+            let app_inner = app.clone();
+            let src = bin.join("bs2_resourcecompiler.exe");
+            let dest = bin.join("resourcecompilerr.exe");
+            if let Err(e) = fs::rename(&src, &dest) {
+                slint::invoke_from_event_loop(move || {
+                    let app = app_inner.unwrap();
+                    app.global::<SetupPageLogic>().set_toast((
+                        true,
+                        format!(
+                            "Failed to rename {} to {}: {e} ({:?})",
+                            src.display(),
+                            dest.display(),
+                            e.kind()
+                        )
+                        .into(),
+                    ));
+                })
+                .expect("Slint main loop should be running");
+                return;
+            }
+
+            slint::invoke_from_event_loop(move || {
+                        let app = app_inner.unwrap();
+                        app.global::<SetupPageLogic>().set_copy_progress(("".into(), 0.0));
+                        app.set_setup_done(true);
+                        app.global::<SetupPageLogic>()
+                            .set_toast((false, "BS2 was successfully set up! Switch to the \"Projects\" tab now to manage your projects and launch the Source 2 tools.".into()));
+                    })
+                    .expect("Slint main loop should be running");
         });
     }
 }
