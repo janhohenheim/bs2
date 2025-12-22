@@ -77,6 +77,9 @@ jobs:
         - get-version
         - build
     runs-on: windows-latest
+    permissions:
+      # Required to create a GitHub release: https://docs.github.com/en/rest/releases/releases#create-a-release
+      contents: write
     steps:
       - name: Download all packages
         uses: actions/download-artifact@v4
