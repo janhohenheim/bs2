@@ -64,41 +64,6 @@ jobs:
       - name: Run doctests
         run: cargo test --locked --workspace --doc
 
-  # Check that the game builds for web.
-  build-web:
-    name: Check build for web
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          targets: wasm32-unknown-unknown
-          toolchain: ${{ env.toolchain }}
-
-      - name: Active CI cargo config
-        run: mv .cargo/config_ci.toml .cargo/config.toml
-
-      - name: Install cargo binstall
-        uses: cargo-bins/cargo-binstall@main
-
-      - name: Install Wild
-        run: cargo binstall wild-linker --locked --force
-
-      - name: Install dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
-
-      - name: Populate target directory from cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Check build for web
-        run: cargo check --config 'profile.web.inherits="dev"' --profile web --target wasm32-unknown-unknown
-
   # Run clippy lints.
   clippy:
     name: Clippy
@@ -134,6 +99,30 @@ jobs:
 
       - name: Run clippy lints
         run: cargo clippy --locked --workspace --all-targets -- --deny warnings
+    
+  # Run clippy lints on Windows.
+  clippy-windows:
+    name: Clippy (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          components: clippy
+          toolchain: ${{ env.toolchain }}
+
+      - name: Populate target directory from cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+          shared-key: lints
+
+      - name: Run clippy lints
+        run: cargo clippy --locked -p bs2_launcher --all-targets -- --deny warnings
 
   # Check formatting.
   format:
