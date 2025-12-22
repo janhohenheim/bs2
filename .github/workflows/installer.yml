@@ -1,8 +1,11 @@
 name: Build Installer
-on: push
+on:
+  push:
+    branches: [main]
+
 jobs:
   build:
-    name: Build the Inno Setup Installer
+    name: Build installer
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -18,12 +21,8 @@ jobs:
         id: cache
         uses: Swatinem/rust-cache@v2
         with:
-          shared-key: ci
+          shared-key: release
           save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Install build dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
 
       - name: Build project
         run: cargo build --release
