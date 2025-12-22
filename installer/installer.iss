@@ -34,7 +34,7 @@ InfoBeforeFile=.\legal.txt
 ; Remove the following line to run in administrative install mode (install for all users).
 PrivilegesRequired=lowest
 OutputBaseFilename=bs2-installer
-SetupIconFile=C:\Users\hhh\git\bs2\assets\icon.ico
+SetupIconFile=..\assets\icon.ico
 SolidCompression=yes
 WizardStyle=modern dynamic
 
