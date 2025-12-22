@@ -9,7 +9,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -40,5 +40,12 @@ jobs:
           cert-password: '${{ secrets.CERTPASSWORD }}'
           cert-sha1: '${{ secrets.CERTHASH }}'
           cert-description: 'Installer for BS2'
-          folder: 'installer/Output'
+          folder: '.\installer\Output'
           timestamp-server: 'http://timestamp.digicert.com'
+
+      - name: Archive installer
+        uses: actions/upload-artifact@v6
+        with:
+          name: bs2-installer
+          path: installer/Output/bs2-installer.exe
+  
