@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  # Trigger this workflow when a tag is pushed in the format `v1.2.3`.
+  push:
+    tags:
+      # Pattern syntax: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+  # Trigger this workflow manually via workflow dispatch.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number in the format `v1.2.3`"
+        required: true
+        type: string
+
+jobs:
+    # Determine the version number for this workflow.
+  get-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get version number from tag
+        id: tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "${GITHUB_OUTPUT}"
+    outputs:
+      # Use the input from workflow dispatch, or fall back to the git tag.
+      version: ${{ inputs.version || steps.tag.outputs.tag }}
+
+  build:
+    name: Build installer
+    runs-on: windows-latest
+    needs: get-version
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          components: clippy
+
+      - name: Restore Rust cache
+        id: cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: release
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build project
+        run: cargo build --release
+
+      - name: Compile Installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: installer/installer.iss
+          options: /O+
+
+      - name: Sign Installer
+        uses: mscrivo/signtool-code-sign@v1
+        with:
+          certificate: '${{ secrets.CERTIFICATE }}'
+          cert-password: '${{ secrets.CERTPASSWORD }}'
+          cert-sha1: '${{ secrets.CERTHASH }}'
+          cert-description: 'Installer for BS2'
+          folder: '.\installer\Output'
+          timestamp-server: 'http://timestamp.digicert.com'
+      - name: Upload package to GitHub release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: installer/Output/bs2-installer.exe
+          asset_name: bs2-installer.exe
+          release_name: ${{ env.version }}
+          tag: ${{ env.version }}
+          overwrite: true
+
