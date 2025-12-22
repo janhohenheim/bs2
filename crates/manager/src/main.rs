@@ -10,7 +10,6 @@ mod setup;
 use config::Config;
 use slint::SharedString;
 
-
 fn main() -> Result<(), slint::PlatformError> {
     tracing_subscriber::fmt::init();
     Config::ensure_exists();
