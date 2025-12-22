@@ -76,7 +76,9 @@ jobs:
     needs: 
         - get-version
         - build
-    runs-on: windows-latest
+    env:
+      version: ${{ needs.get-version.outputs.version }}
+    runs-on: ubuntu-latest
     permissions:
       # Required to create a GitHub release: https://docs.github.com/en/rest/releases/releases#create-a-release
       contents: write
@@ -102,7 +104,7 @@ jobs:
     needs: 
         - get-version
         - build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Download all packages
         uses: actions/download-artifact@v7
