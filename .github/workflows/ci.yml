@@ -18,7 +18,7 @@ jobs:
   # Run tests.
   test:
     name: Tests
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -30,11 +30,12 @@ jobs:
           components: rustc-codegen-cranelift-preview
           toolchain: ${{ env.toolchain }}
 
-      - name: Set LD_LIBRARY_PATH
-        id: ld_library_path
+      - name: set LD_LIBRARY_PATH on Windows
         run: |
-          # Setting LD_LIBRARY_PATH is a workaround for <https://github.com/TheBevyFlock/bevy_new_2d/pull/318#issuecomment-2585935350>.
-          echo "LD_LIBRARY_PATH=$(rustc --print target-libdir)" >> $GITHUB_ENV
+          $libDir = (rustc --print target-libdir)
+          Add-Content -Path $env:GITHUB_ENV -Value "RUST_LIB_DIR=$libDir"
+          Add-Content -Path $env:GITHUB_PATH -Value "$libDir"
+          echo "LD_LIBRARY_PATH=$libDir" >> $env:GITHUB_ENV
 
       - name: Populate target directory from cache
         uses: Swatinem/rust-cache@v2
@@ -42,17 +43,8 @@ jobs:
           save-if: ${{ github.ref == 'refs/heads/main' }}
           cache-directories: ${{ env.LD_LIBRARY_PATH }}
 
-      - name: Install dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
-
       - name: Active CI cargo config
         run: mv .cargo/config_ci.toml .cargo/config.toml
-
-      - name: Install cargo binstall
-        uses: cargo-bins/cargo-binstall@main
-
-      - name: Install Wild
-        run: cargo binstall wild-linker --locked --force
 
       - name: Install nextest
         run: cargo binstall cargo-nextest --locked --force
@@ -67,7 +59,7 @@ jobs:
   # Run clippy lints.
   clippy:
     name: Clippy
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -82,15 +74,6 @@ jobs:
       - name: Active CI cargo config
         run: mv .cargo/config_ci.toml .cargo/config.toml
 
-      - name: Install cargo binstall
-        uses: cargo-bins/cargo-binstall@main
-
-      - name: Install Wild
-        run: cargo binstall wild-linker --locked --force
-
-      - name: Install dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
-
       - name: Populate target directory from cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -99,35 +82,11 @@ jobs:
 
       - name: Run clippy lints
         run: cargo clippy --locked --workspace --all-targets -- --deny warnings
-    
-  # Run clippy lints on Windows.
-  clippy-windows:
-    name: Clippy (Windows)
-    runs-on: windows-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          components: clippy
-          toolchain: ${{ env.toolchain }}
-
-      - name: Populate target directory from cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-          shared-key: lints-windows
-
-      - name: Run clippy lints
-        run: cargo clippy --locked -p bs2_launcher --all-targets -- --deny warnings
 
   # Check formatting.
   format:
     name: Format
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -145,7 +104,7 @@ jobs:
   # Check documentation.
   doc:
     name: Docs
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -159,12 +118,6 @@ jobs:
 
       - name: Active CI cargo config
         run: mv .cargo/config_ci.toml .cargo/config.toml
-
-      - name: Install cargo binstall
-        uses: cargo-bins/cargo-binstall@main
-
-      - name: Install Wild
-        run: cargo binstall wild-linker --locked --force
 
       - name: Install dependencies
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
@@ -181,7 +134,7 @@ jobs:
   # Run Bevy lints.
   bevy-lint:
     name: Bevy linter
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -192,9 +145,6 @@ jobs:
         with:
           components: rustc-codegen-cranelift-preview, rustc-dev, llvm-tools-preview
           toolchain: ${{ env.toolchain }}
-
-      - name: Install dependencies
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
 
       - name: Populate target directory from cache
         uses: Swatinem/rust-cache@v2
@@ -210,12 +160,6 @@ jobs:
 
       - name: Active CI cargo config
         run: mv .cargo/config_ci.toml .cargo/config.toml
-
-      - name: Install cargo binstall
-        uses: cargo-bins/cargo-binstall@main
-
-      - name: Install Wild
-        run: cargo binstall wild-linker --locked --force
 
       - name: Run Bevy linter
         run: bevy_lint --locked --workspace --all-targets

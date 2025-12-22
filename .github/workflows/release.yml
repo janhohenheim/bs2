@@ -29,7 +29,6 @@ jobs:
   build:
     name: Build installer
     runs-on: windows-latest
-    needs: get-version
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -65,13 +64,62 @@ jobs:
           cert-description: 'Installer for BS2'
           folder: '.\installer\Output'
           timestamp-server: 'http://timestamp.digicert.com'
+
+      - name: Archive installer
+        uses: actions/upload-artifact@v6
+        with:
+          name: bs2-installer
+          path: installer/Output/bs2-installer.exe
+
+  upload-github:
+    name: Upload installer to GitHub
+    needs: 
+        - get-version
+        - build
+    runs-on: windows-latest
+    steps:
+      - name: Download all packages
+        uses: actions/download-artifact@v4
+        with:
+          name: bs2-installer
+          path: tmp
+
       - name: Upload package to GitHub release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: installer/Output/bs2-installer.exe
-          asset_name: bs2-installer.exe
+          asset_name: temp/bs2-installer.exe
           release_name: ${{ env.version }}
           tag: ${{ env.version }}
           overwrite: true
 
+  upload-itch:
+    name: Upload installer to itch.io
+    needs: 
+        - get-version
+        - build
+    runs-on: windows-latest
+    steps:
+      - name: Download all packages
+        uses: actions/download-artifact@v7
+        with:
+          name: bs2-installer
+          path: tmp
+
+      - name: Install butler
+        run: |
+          curl -L -o butler.zip 'https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default'
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
+
+      - name: Upload all packages to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_CREDENTIALS }}
+        run: |
+          ./butler push \
+            --fix-permissions \
+            --userversion='${{ needs.get-version.outputs.version }}' \
+            temp/bs2-installer.exe \
+            janhohenheim/bs2:"${channel#package-}"
