@@ -115,10 +115,7 @@ pub(super) fn plugin(app: &App) {
     app.global::<ProjectsPageLogic>()
         .on_validate_new_project_name(move |name| {
             let app = app_inner.unwrap();
-            if name.is_empty() {
-                app.global::<ProjectsPageLogic>()
-                    .set_new_project_name_err("".into());
-            } else if is_ascii_rust_ident(name.as_str()) {
+            if name.is_empty() || is_ascii_rust_ident(name.as_str()){
                 app.global::<ProjectsPageLogic>()
                     .set_new_project_name_err("".into());
             } else if Config::read().projects.iter().any(|p| p.name.as_str() == name.as_str()) {
