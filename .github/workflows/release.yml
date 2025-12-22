@@ -126,5 +126,5 @@ jobs:
           ./butler push \
             --fix-permissions \
             --userversion='${{ needs.get-version.outputs.version }}' \
-            temp/bs2-installer.exe \
+            tmp/bs2-installer.exe \
             janhohenheim/bs2:windows
