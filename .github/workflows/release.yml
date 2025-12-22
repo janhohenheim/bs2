@@ -93,8 +93,8 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: installer/Output/bs2-installer.exe
-          asset_name: temp/bs2-installer.exe
+          file: temp/bs2-installer.exe
+          asset_name: bs2-installer.exe
           release_name: ${{ env.version }}
           tag: ${{ env.version }}
           overwrite: true
@@ -127,4 +127,4 @@ jobs:
             --fix-permissions \
             --userversion='${{ needs.get-version.outputs.version }}' \
             temp/bs2-installer.exe \
-            janhohenheim/bs2:"${channel#package-}"
+            janhohenheim/bs2:windows-64:"${channel#package-}"
